@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title>UltraLAB - Catálogo Oficial de Pedidos</title>
+    <meta name="description" content="Catálogo oficial UltraLAB. Produtos com preços atualizados. Monte seu pedido online e envie direto pelo WhatsApp. Envio para todo Brasil.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; color: #111827; }
+        h1, h2, h3, h4, .font-heading { font-family: 'Space Grotesk', sans-serif; }
+        @keyframes slideBanner {
+            0%, 28% { transform: translateX(0%); }
+            33%, 61% { transform: translateX(-100%); }
+            66%, 95% { transform: translateX(-200%); }
+            100% { transform: translateX(0%); }
+        }
+        .banner-slider { display: flex; animation: slideBanner 12s infinite ease-in-out; }
+        @media print {
+            .no-print { display: none !important; }
+            body { padding-bottom: 0 !important; background: #fff !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900 pb-44">
+
+    <div class="max-w-lg sm:max-w-none mx-auto px-3 sm:px-6 lg:px-12 pt-4">
+        
+        <!-- HEADER ULTRALAB -->
+        <header class="flex items-center justify-between mb-4">
+            <button onclick="goToStep(1)" type="button" class="flex items-center gap-3 text-left active:scale-95 transition-transform" title="Voltar ao catálogo">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-cyan-600 to-blue-900 border-2 border-cyan-400/40 flex flex-col items-center justify-center shadow-md shadow-cyan-900/15">
+                    <span class="font-heading font-bold text-base sm:text-lg text-white leading-none tracking-wider">ULTRA</span>
+                    <span class="text-[9px] font-semibold text-cyan-200 tracking-widest mt-0.5">LAB</span>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Ultra<span class="text-cyan-600">LAB</span></h1>
+                    <p class="text-xs sm:text-sm text-gray-500">Catálogo de Pedidos</p>
+                </div>
+            </button>
+            <div class="flex items-center gap-2 no-print">
+                <a id="header-wa-link" href="#" target="_blank" class="px-3 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold flex items-center gap-1.5 hover:bg-emerald-100 transition-colors">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Suporte Online
+                </a>
+            </div>
+        </header>
+
+        <!-- BARRA DE PROGRESSO (6 ETAPAS) -->
+        <nav aria-label="Etapas da compra" class="no-print mt-3 mb-4 rounded-xl border border-cyan-200 bg-cyan-50/70 px-3 py-2.5 shadow-sm">
+            <div class="flex items-center justify-between">
+                <p id="step-title" class="text-sm font-semibold text-cyan-900">1 de 6 · Catálogo</p>
+                <span id="free-shipping-badge" class="text-[11px] font-semibold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">Frete Grátis acima de R$ 1.800</span>
+            </div>
+            <ol class="flex gap-2 mt-2" id="progress-bars">
+                <li onclick="goToStep(1)" class="flex-1 cursor-pointer"><span class="step-bar block h-1.5 rounded-full bg-cyan-600"></span><span class="hidden lg:block text-xs mt-1 text-gray-700 font-medium">Catálogo</span></li>
+                <li onclick="goToStep(2)" class="flex-1 cursor-pointer"><span class="step-bar block h-1.5 rounded-full bg-gray-300"></span><span class="hidden lg:block text-xs mt-1 text-gray-500">Carrinho</span></li>
+                <li onclick="goToStep(3)" class="flex-1 cursor-pointer"><span class="step-bar block h-1.5 rounded-full bg-gray-300"></span><span class="hidden lg:block text-xs mt-1 text-gray-500">Entrega</span></li>
+                <li onclick="goToStep(4)" class="flex-1 cursor-pointer"><span class="step-bar block h-1.5 rounded-full bg-gray-300"></span><span class="hidden lg:block text-xs mt-1 text-gray-500">Pré-Orçamento</span></li>
+                <li onclick="goToStep(5)" class="flex-1 cursor-pointer"><span class="step-bar block h-1.5 rounded-full bg-gray-300"></span><span class="hidden lg:block text-xs mt-1 text-gray-500">Dados</span></li>
+                <li onclick="goToStep(6)" class="flex-1 cursor-pointer"><span class="step-bar block h-1.5 rounded-full bg-gray-300"></span><span class="hidden lg:block text-xs mt-1 text-gray-500">Revisão Final</span></li>
+            </ol>
+        </nav>
+
+        <!-- BOTÕES DE CONVITES OPCIONAIS -->
+        <div class="no-print flex flex-wrap gap-2 mb-4" aria-label="Convites opcionais">
+            <button onclick="openWelcomeModal()" type="button" class="min-h-11 px-3 rounded-lg text-xs font-medium border border-gray-200 bg-white text-gray-700 hover:border-cyan-500 shadow-sm transition-colors">Boas-vindas</button>
+            <button onclick="openWhatsAppNews()" type="button" class="min-h-11 px-3 rounded-lg text-xs font-medium border border-gray-200 bg-white text-gray-700 hover:border-cyan-500 shadow-sm transition-colors">Novidades no WhatsApp</button>
+            <button onclick="openInstallModal()" type="button" class="min-h-11 px-3 text-xs font-semibold text-cyan-700 hover:underline">Instalar aplicativo</button>
+        </div>
+
+        <!-- CARROSSEL DE BANNERS -->
+        <div class="no-print mb-4 overflow-hidden rounded-xl shadow-sm">
+            <div class="banner-slider">
+                <div class="flex-[0_0_100%] min-w-0 pr-1"><div class="rounded-xl px-4 py-3 text-center text-sm font-medium border bg-cyan-50 text-cyan-900 border-cyan-200">Ofertas imperdíveis para você comprar melhor</div></div>
+                <div class="flex-[0_0_100%] min-w-0 px-1"><div class="rounded-xl px-4 py-3 text-center text-sm font-medium border bg-emerald-50 text-emerald-900 border-emerald-200">Compre com segurança, receba com tranquilidade</div></div>
+                <div class="flex-[0_0_100%] min-w-0 pl-1"><div class="rounded-xl px-4 py-3 text-center text-sm font-medium border bg-emerald-50 text-emerald-900 border-emerald-200">Frete Grátis acima de R$1800,00</div></div>
+            </div>
+        </div>
+
+        <!-- ==================== ETAPA 1: CATÁLOGO ==================== -->
+        <section id="step-1" aria-label="Catálogo por princípio ativo" class="mb-6">
+            
+            <!-- Busca + Botão Filtros Mobile -->
+            <div class="no-print flex gap-2 mb-3">
+                <label class="flex flex-1 items-center min-w-0 gap-2 px-3 min-h-12 rounded-xl border border-gray-200 bg-white shadow-sm focus-within:ring-2 focus-within:ring-cyan-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-400 shrink-0"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                    <input id="search-input" oninput="renderProducts()" placeholder="Buscar princípio ativo, produto, marca ou código…" class="w-full min-w-0 bg-transparent outline-none text-sm text-gray-900 placeholder:text-gray-400" type="search">
+                    <button onclick="startVoiceSearch()" type="button" title="Busca por voz" class="min-w-9 min-h-9 flex items-center justify-center text-gray-400 hover:text-cyan-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
+                    </button>
+                </label>
+                <button onclick="toggleMobileFilters()" type="button" class="lg:hidden flex items-center justify-center gap-1.5 px-3.5 rounded-xl min-h-12 bg-cyan-600 text-white text-sm font-semibold shadow-sm active:scale-95 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg>
+                    Filtros
+                </button>
+            </div>
+
+            <!-- Navegue por princípio ativo + Favoritos -->
+            <div class="no-print flex flex-wrap gap-2 items-center justify-between mb-3">
+                <h2 class="text-base font-bold text-gray-900">Navegue por princípio ativo</h2>
+                <button id="fav-filter-btn" onclick="toggleFavFilter()" type="button" class="flex items-center gap-1.5 min-h-11 px-3 rounded-lg border text-xs font-medium bg-white border-gray-200 text-gray-700 hover:border-cyan-500 shadow-sm transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red-500"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                    Favoritos (<span id="fav-count">0</span>)
+                </button>
+            </div>
+
+            <!-- Botões de Categorias -->
+            <nav id="category-nav" class="no-print grid grid-cols-3 sm:grid-cols-4 lg:flex lg:flex-wrap gap-2"></nav>
+            <button id="toggle-cats-btn" onclick="toggleAllCategories()" type="button" class="no-print min-h-11 flex items-center gap-1 text-xs font-semibold text-cyan-700 mt-1 hover:underline">
+                <span>Ver todas as categorias</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+
+            <!-- Layout Principal: Sidebar + Grade -->
+            <div class="lg:grid lg:grid-cols-[230px_minmax(0,1fr)] gap-5 mt-4">
+                
+                <!-- Sidebar de Refinamento -->
+                <aside id="filters-sidebar" class="no-print hidden lg:block self-start p-4 rounded-xl border border-gray-200 bg-white shadow-sm mb-4 lg:mb-0">
+                    <div class="space-y-4">
+                        <div class="flex gap-2 items-center justify-between text-sm font-bold text-gray-900 border-b border-gray-100 pb-2.5">
+                            <span class="flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-600"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg>
+                                Refinar resultados
+                            </span>
+                            <button onclick="toggleMobileFilters()" class="lg:hidden text-gray-400 hover:text-gray-700 text-lg">×</button>
+                        </div>
+
+                        <div>
+                            <label for="catalog-brand" class="block text-xs font-medium text-gray-600 mb-1.5">Laboratório / marca</label>
+                            <select id="catalog-brand" onchange="renderProducts()" class="w-full min-h-11 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-800 px-3 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                <option value="">Todas as marcas</option>
+                                <option value="ALPHA">ALPHA</option>
+                                <option value="BRATVA">BRATVA</option>
+                                <option value="CANADA">CANADA</option>
+                                <option value="CANADÁ LABS">CANADÁ LABS</option>
+                                <option value="COOPER">COOPER</option>
+                                <option value="DragonElite">DragonElite</option>
+                                <option value="EMINENCE">EMINENCE</option>
+                                <option value="EUROVITAMINS">EUROVITAMINS</option>
+                                <option value="FARMÁCIA">FARMÁCIA</option>
+                                <option value="GENICS">GENICS</option>
+                                <option value="GLOBALGEN">GLOBALGEN</option>
+                                <option value="GROTH">GROTH</option>
+                                <option value="HUBIO PHARM">HUBIO PHARM</option>
+                                <option value="KING">KING</option>
+                                <option value="LANDERLAN">LANDERLAN</option>
+                                <option value="LIPOLESS">LIPOLESS</option>
+                                <option value="MANIPULADO">MANIPULADO</option>
+                                <option value="MUSCLE LABS">MUSCLE LABS</option>
+                                <option value="NEW AGE">NEW AGE</option>
+                                <option value="OXYGEN">OXYGEN</option>
+                                <option value="PHARMACOM">PHARMACOM</option>
+                                <option value="SYNEDICA">SYNEDICA</option>
+                                <option value="UTHER">UTHER</option>
+                                <option value="ZPHC">ZPHC</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="catalog-concentration" class="block text-xs font-medium text-gray-600 mb-1.5">Concentração</label>
+                            <select id="catalog-concentration" onchange="renderProducts()" class="w-full min-h-11 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-800 px-3 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                <option value="">Todas</option>
+                                <option value="10 mg">10 mg</option>
+                                <option value="20 mg">20 mg</option>
+                                <option value="40 mg">40 mg</option>
+                                <option value="50 mg">50 mg</option>
+                                <option value="100 mg/ml">100 mg/ml</option>
+                                <option value="150 mg/ml">150 mg/ml</option>
+                                <option value="200 mg/ml">200 mg/ml</option>
+                                <option value="250 mg/ml">250 mg/ml</option>
+                                <option value="300 mg/ml">300 mg/ml</option>
+                                <option value="5000 UI">5000 UI</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="catalog-presentationType" class="block text-xs font-medium text-gray-600 mb-1.5">Apresentação</label>
+                            <select id="catalog-presentationType" onchange="renderProducts()" class="w-full min-h-11 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-800 px-3 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                <option value="">Todas</option>
+                                <option value="AMPOLA">Ampola</option>
+                                <option value="FRASCO">Frasco Multidose</option>
+                                <option value="COMPRIMIDO">Comprimido</option>
+                                <option value="CANETA">Caneta</option>
+                                <option value="CÁPSULA">Cápsula</option>
+                            </select>
+                        </div>
+
+                        <fieldset>
+                            <legend class="text-xs font-medium text-gray-600 mb-1.5">Faixa de preço (R$)</legend>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input id="catalog-min" oninput="renderProducts()" min="0" step="1" placeholder="Mínimo" class="w-full min-h-11 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-800 px-3 focus:outline-none focus:ring-2 focus:ring-cyan-500" type="number">
+                                <input id="catalog-max" oninput="renderProducts()" min="0" step="1" placeholder="Máximo" class="w-full min-h-11 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-800 px-3 focus:outline-none focus:ring-2 focus:ring-cyan-500" type="number">
+                            </div>
+                        </fieldset>
+
+                        <div>
+                            <label for="catalog-availability" class="block text-xs font-medium text-gray-600 mb-1.5">Disponibilidade</label>
+                            <select id="catalog-availability" onchange="renderProducts()" class="w-full min-h-11 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-800 px-3 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                <option value="all">Todos os produtos</option>
+                                <option value="available">Disponíveis</option>
+                                <option value="unavailable">Sem estoque</option>
+                            </select>
+                        </div>
+
+                        <button onclick="resetFilters()" type="button" class="w-full min-h-11 rounded-lg border border-gray-300 text-gray-700 hover:border-cyan-600 hover:text-cyan-700 text-sm font-medium transition-colors">Limpar refinamentos</button>
+                    </div>
+                </aside>
+
+                <!-- Grade de Produtos -->
+                <div class="min-w-0">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <div>
+                            <h3 id="current-cat-title" class="text-base font-bold text-gray-900">Todos os princípios e grupos</h3>
+                            <p id="products-count-label" class="text-xs text-gray-500 mt-0.5">Carregando produtos...</p>
+                        </div>
+                        <label class="no-print flex gap-2 items-center text-xs text-gray-600 font-medium">
+                            Ordenar
+                            <select id="sort-select" onchange="renderProducts()" class="rounded-lg border border-gray-300 bg-white px-3 min-h-10 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                <option value="name">Nome A–Z</option>
+                                <option value="price_asc">Menor preço</option>
+                                <option value="price_desc">Maior preço</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 items-stretch"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ETAPAS 2 A 6: FLUXO DE CHECKOUT ==================== -->
+        <section id="step-checkout" class="hidden max-w-2xl mx-auto mb-10 bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+            <div id="checkout-content"></div>
+        </section>
+
+    </div>
+
+    <!-- BARRA FIXA INFERIOR (CHECKOUT DOCK) -->
+    <div data-checkout-dock="true" class="no-print fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+        <div class="sm:flex sm:items-center max-w-lg sm:max-w-none mx-auto sm:px-6 lg:px-12">
+            <div class="flex items-center justify-between gap-3 px-3 py-1.5 border-b border-gray-100 sm:border-b-0 sm:order-2 sm:pl-4">
+                <a id="dock-wa-support" href="#" target="_blank" rel="noopener noreferrer" title="Tirar dúvidas no WhatsApp" class="min-h-10 sm:w-11 sm:h-11 sm:rounded-full inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-emerald-700 sm:bg-emerald-600 sm:text-white hover:opacity-90 transition-opacity">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>
+                    <span class="sm:sr-only">Dúvidas no WhatsApp</span>
+                </a>
+            </div>
+            <div class="flex-1 min-w-0 max-w-lg sm:max-w-none mx-auto px-3 sm:px-0 py-2.5 flex items-center justify-between gap-2">
+                <div>
+                    <p id="dock-items-count" class="text-[11px] font-medium text-gray-500">0 itens no pedido</p>
+                    <p id="dock-total-price" class="text-base sm:text-lg font-bold text-cyan-700">R$ 0,00</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="dock-back-btn" onclick="prevStep()" class="hidden px-3 min-h-11 py-2 border border-gray-300 text-gray-700 text-xs font-semibold rounded-xl hover:bg-gray-100">Voltar</button>
+                    <button id="dock-action-btn" onclick="nextStep()" disabled class="px-5 min-h-11 py-2.5 bg-cyan-600 hover:bg-cyan-500 disabled:bg-gray-200 disabled:text-gray-400 text-white text-sm font-bold rounded-xl flex items-center gap-1.5 transition-all active:scale-95 shadow-sm">
+                        <span id="dock-btn-text">Ver Carrinho</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER COMPLETO ULTRALAB -->
+    <footer class="no-print max-w-lg sm:max-w-none mx-auto px-3 sm:px-6 lg:px-12 pt-8 pb-12 border-t border-gray-200 mt-8">
+        <div class="flex items-center gap-2.5 mb-4">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-600 to-blue-900 flex items-center justify-center text-[10px] font-bold text-white">ULT</div>
+            <span class="text-base font-bold text-gray-900">Ultra<span class="text-cyan-600">LAB</span></span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-3">
+            <button onclick="openTrackModal()" class="py-3 px-3 bg-white border border-gray-200 hover:border-cyan-500 rounded-xl text-xs sm:text-sm font-medium text-gray-700 flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-600"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                Rastrear Pedido
+            </button>
+            <button onclick="openHistoryModal()" class="py-3 px-3 bg-white border border-gray-200 hover:border-cyan-500 rounded-xl text-xs sm:text-sm font-medium text-gray-700 flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-600"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg>
+                Meus Pedidos
+            </button>
+            <button onclick="openAboutModal()" class="py-3 px-3 bg-white border border-gray-200 hover:border-cyan-500 rounded-xl text-xs sm:text-sm font-medium text-gray-700 flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-600"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                Sobre Nós
+            </button>
+            <button onclick="openPartnerModal()" class="py-3 px-3 bg-white border border-gray-200 hover:border-cyan-500 rounded-xl text-xs sm:text-sm font-medium text-gray-700 flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Seja Parceiro
+            </button>
+            <button onclick="openQrModal()" class="py-3 px-3 bg-white border border-gray-200 hover:border-cyan-500 rounded-xl text-xs sm:text-sm font-medium text-gray-700 flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-600"><rect width="5" height="5" x="3" y="3" rx="1"></rect><rect width="5" height="5" x="16" y="3" rx="1"></rect><rect width="5" height="5" x="3" y="16" rx="1"></rect><path d="M21 16h-3a2 2 0 0 0-2 2v3"></path><path d="M12 7v3a2 2 0 0 1-2 2H7"></path></svg>
+                QR Code
+            </button>
+            <button onclick="window.print()" class="py-3 px-3 bg-white border border-gray-200 hover:border-cyan-500 rounded-xl text-xs sm:text-sm font-medium text-gray-700 flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-600"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path></svg>
+                Baixar Catálogo PDF
+            </button>
+        </div>
+        <button onclick="openFaqModal()" class="w-full mb-5 py-3 bg-white border border-gray-200 hover:border-cyan-500 rounded-xl text-xs sm:text-sm font-medium text-gray-700 flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-600"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
+            Perguntas Frequentes (FAQ)
+        </button>
+        <div class="text-[11px] text-gray-500 space-y-1">
+            <p id="footer-wa-text">WhatsApp Oficial de Atendimento</p>
+            <p>Seg-Sex 9h às 18h</p>
+            <p>Seus dados são usados apenas para envio seguro e discreto</p>
+            <p>Envios com seguro para todo o Brasil</p>
+            <p class="text-gray-700 font-medium mt-2">UltraLAB — Qualidade e confiança em cada produto</p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-gray-200 flex justify-between items-center">
+            <button onclick="openAdminModal()" class="text-[11px] text-gray-400 hover:text-cyan-600 transition-colors">Área administrativa</button>
+            <span class="text-[10px] text-gray-400">© 2026 UltraLAB</span>
+        </div>
+    </footer>
+
+    <!-- MODAL DINÂMICO MULTIUSO -->
+    <div id="info-modal" onclick="closeModal()" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div onclick="event.stopPropagation()" class="bg-white border border-gray-200 rounded-2xl max-w-lg w-full p-5 shadow-2xl max-h-[85vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-100">
+                <h3 id="modal-title" class="text-lg font-bold text-gray-900"></h3>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:text-gray-900 flex items-center justify-center text-lg">×</button>
+            </div>
+            <div id="modal-body" class="text-sm text-gray-600 space-y-3"></div>
+            <button onclick="closeModal()" class="mt-5 w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-sm font-semibold">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // CONFIGURAÇÕES GERAIS DO PROJETO ULTRALAB
+        // ============================================================================
+        let CONFIG = JSON.parse(localStorage.getItem('ultralab_config')) || {
+            whatsapp: "5531973524048", // Troque aqui ou pelo Painel Admin (senha: admin123)
+            freeShippingThreshold: 1800,
+            sedexPrice: 45,
+            pacPrice: 30
+        };
+
+        // AS 23 CATEGORIAS OFICIAIS
+        const CATEGORIES = [
+            { name: "Todos", count: 207 },
+            { name: "Testosterona", count: 44 },
+            { name: "Nandrolona", count: 19 },
+            { name: "Masteron", count: 10 },
+            { name: "Primobolan", count: 8 },
+            { name: "Trembolona", count: 17 },
+            { name: "Peptídeos", count: 21 },
+            { name: "GH", count: 8 },
+            { name: "HCG", count: 2 },
+            { name: "Blends", count: 5 },
+            { name: "Produtos orais", count: 55 },
+            { name: "Boldenona", count: 4 },
+            { name: "Clenbuterol", count: 2 },
+            { name: "Dianabol", count: 1 },
+            { name: "MENT", count: 1 },
+            { name: "Outros", count: 1 },
+            { name: "Oximetolona", count: 1 },
+            { name: "QUEIMADORES / DEFINIÇÃO", count: 1 },
+            { name: "Stanozolol", count: 2 },
+            { name: "SUPORTE", count: 1 },
+            { name: "TIZERPATIDE", count: 1 },
+            { name: "Turinabol", count: 1 },
+            { name: "VARIADOS", count: 2 }
+        ];
+
+        // BASE DE PRODUTOS INICIAL (28 Produtos reais prontos + Editável via Admin)
+        const DEFAULT_PRODUCTS = [
+            { id: "ULT338", brand: "Marca não informada", name: "Água Bacteriostática 3ml", category: "Peptídeos", concentration: "Não informada", presentation: "FRASCO | 3ML", price: 27.00, oldPrice: null, discount: null, isNew: false, available: true, img: "https://silverlab.vip/manus-storage/peptide_placeholder_treated_0ef647ca.png" },
+            { id: "ULT037", brand: "ALPHA", name: "ALPHA PHARMA - DURATESTON 250MG/ML", category: "Testosterona", concentration: "250 mg/ml", presentation: "AMPOLA | 10 X 1ML", price: 320.00, oldPrice: 380.00, discount: "-16%", isNew: true, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV037_c9c33160.png" },
+            { id: "ULT024", brand: "ALPHA", name: "ALPHA PHARMA - ENANTATO DE TESTOSTERONA 250MG/ML", category: "Testosterona", concentration: "250 mg/ml", presentation: "AMPOLA | 10 X 1ML", price: 330.00, oldPrice: 350.00, discount: "-6%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV024_a01d9dfb.png" },
+            { id: "ULT208", brand: "ALPHA", name: "ALPHA PHARMA - HCG 15.000 UI", category: "HCG", concentration: "5000 UI", presentation: "3 FRASCO MULTIDOSE | 5.000UI", price: 680.00, oldPrice: 880.00, discount: "-23%", isNew: true, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV208_8a9305ea.png" },
+            { id: "ULT144", brand: "BRATVA", name: "BRATVA - BLEND 150MG/ML", category: "Blends", concentration: "150 mg/ml", presentation: "FRASCO MULTIDOSE | 10ML", price: 170.00, oldPrice: 200.00, discount: "-15%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV144_46f196fb.png" },
+            { id: "ULT079", brand: "BRATVA", name: "BRATVA - DECA 250MG/ML", category: "Nandrolona", concentration: "250 mg/ml", presentation: "FRASCO MULTIDOSE | 10ML", price: 170.00, oldPrice: 200.00, discount: "-15%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV079_0eb010ea.png" },
+            { id: "ULT166", brand: "BRATVA", name: "BRATVA - DIANABOL 10MG - 100 COMP", category: "Produtos orais", concentration: "10 mg", presentation: "COMPRIMIDO | 100 UNID", price: 150.00, oldPrice: 190.00, discount: "-21%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV166_6c34010e.png" },
+            { id: "ULT167", brand: "BRATVA", name: "BRATVA - DIANABOL 10MG - 50 COMP", category: "Produtos orais", concentration: "10 mg", presentation: "COMPRIMIDO | 50 UNID", price: 120.00, oldPrice: 150.08, discount: "-20%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV167_30ea6f44.png" },
+            { id: "ULT048", brand: "BRATVA", name: "BRATVA - DURATESTON 250MG/ML - AMPOLA", category: "Testosterona", concentration: "250 mg/ml", presentation: "FRASCO MULTIDOSE | 10ML", price: 170.00, oldPrice: 230.00, discount: "-26%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV048_e69e4dbe.png" },
+            { id: "ULT049", brand: "BRATVA", name: "BRATVA - DURATESTON 250MG/ML - FRASCO", category: "Testosterona", concentration: "250 mg/ml", presentation: "AMPOLA | 10 X 1ML", price: 170.00, oldPrice: 220.00, discount: "-23%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV049_15e04be9.png" },
+            { id: "ULT033", brand: "BRATVA", name: "BRATVA - ENANTATO DE TESTOSTERONA 250MG/ML", category: "Testosterona", concentration: "250 mg/ml", presentation: "FRASCO MULTIDOSE | 10ML", price: 170.00, oldPrice: 190.00, discount: "-11%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV033_b7a41936.png" },
+            { id: "ULT153", brand: "BRATVA", name: "BRATVA - HEMOGENIN 50MG", category: "Produtos orais", concentration: "50 mg", presentation: "COMPRIMIDO | 25 UNID", price: 130.00, oldPrice: 160.00, discount: "-19%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV153_dec8f3d4.png" },
+            { id: "ULT085", brand: "BRATVA", name: "BRATVA - MASTERON PROPIONATO 100MG/ML", category: "Masteron", concentration: "100 mg/ml", presentation: "FRASCO MULTIDOSE | 10ML", price: 190.00, oldPrice: 200.00, discount: "-5%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV085_d7b0b29c.png" },
+            { id: "ULT103", brand: "BRATVA", name: "BRATVA - TREMBOLONA ACETATO 100MG/ML", category: "Trembolona", concentration: "100 mg/ml", presentation: "FRASCO MULTIDOSE | 10ML", price: 170.08, oldPrice: 220.00, discount: "-23%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV103_07e5c225.png" },
+            { id: "ULT111", brand: "BRATVA", name: "BRATVA - TREMBOLONA ENANTATO 200MG/ML", category: "Trembolona", concentration: "200 mg/ml", presentation: "FRASCO MULTIDOSE | 10ML", price: 170.00, oldPrice: 220.00, discount: "-23%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV111_6c5f62e2.png" },
+            { id: "ULT073", brand: "CANADA", name: "CANADA - DECABOLAN 250MG/ML", category: "Nandrolona", concentration: "250 mg/ml", presentation: "AMPOLA | 10 X 1ML", price: 330.00, oldPrice: 380.00, discount: "-13%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV073_6ffaa8c4.png" },
+            { id: "ULT084", brand: "CANADA", name: "CANADA - MASTERON PROPIONATO 100MG/ML", category: "Masteron", concentration: "100 mg/ml", presentation: "AMPOLA | 10 X 1ML", price: 390.00, oldPrice: 430.00, discount: "-9%", isNew: true, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV084_de46766a.png" },
+            { id: "ULT102", brand: "CANADA", name: "CANADA - TREMBOLONA ENANTATO 200MG", category: "Trembolona", concentration: "200 mg/ml", presentation: "AMPOLA | 10 X 1ML", price: 350.00, oldPrice: null, discount: null, isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV102_8bc0a348.png" },
+            { id: "ULT064", brand: "COOPER", name: "COOPER PHARMA - CIPIONATO DE TESTOSTERONA 200MG/ML", category: "Testosterona", concentration: "200 mg/ml", presentation: "AMPOLA | 10 X 1ML", price: 290.00, oldPrice: 350.00, discount: "-17%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV064_8c503eb5.png" },
+            { id: "ULT172", brand: "COOPER", name: "COOPER PHARMA - CLENBUTEROL 40MCG/COMP", category: "Clenbuterol", concentration: "40 mg", presentation: "COMPRIMIDO | 50 UNID", price: 190.00, oldPrice: 230.00, discount: "-17%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV172_be165031.png" },
+            { id: "ULT215", brand: "LANDERLAN", name: "LANDERLAN - DECA DURABOLIN 200MG/ML", category: "Nandrolona", concentration: "200 mg/ml", presentation: "FRASCO MULTIDOSE | 5ML", price: 185.00, oldPrice: 210.00, discount: "-12%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV079_0eb010ea.png" },
+            { id: "ULT216", brand: "LANDERLAN", name: "LANDERLAN - OXANDROLONA 5MG - 100 COMP", category: "Produtos orais", concentration: "10 mg", presentation: "COMPRIMIDO | 100 UNID", price: 240.00, oldPrice: 270.00, discount: "-11%", isNew: true, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV166_6c34010e.png" },
+            { id: "ULT217", brand: "LANDERLAN", name: "LANDERLAN - STANOZOLOL INJETÁVEL 50MG/ML", category: "Stanozolol", concentration: "50 mg", presentation: "FRASCO MULTIDOSE | 30ML", price: 195.00, oldPrice: 230.00, discount: "-15%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/peptide_placeholder_treated_0ef647ca.png" },
+            { id: "ULT218", brand: "PHARMACOM", name: "PHARMACOM - PRIMOBOLAN 100MG/ML", category: "Primobolan", concentration: "100 mg/ml", presentation: "AMPOLA | 10 X 1ML", price: 460.00, oldPrice: 520.00, discount: "-12%", isNew: true, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV084_de46766a.png" },
+            { id: "ULT219", brand: "ZPHC", name: "ZPHC - SOMATROPINA GH 100 UI KIT", category: "GH", concentration: "5000 UI", presentation: "FRASCO | KIT 100UI", price: 980.00, oldPrice: 1150.00, discount: "-15%", isNew: true, available: true, img: "https://silverlab.vip/manus-storage/peptide_placeholder_treated_0ef647ca.png" },
+            { id: "ULT220", brand: "KING", name: "KING PHARMA - BOLDENONA 250MG/ML", category: "Boldenona", concentration: "250 mg/ml", presentation: "FRASCO MULTIDOSE | 10ML", price: 210.00, oldPrice: 250.00, discount: "-16%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV033_b7a41936.png" },
+            { id: "ULT221", brand: "SYNEDICA", name: "SYNEDICA - TIRZEPATIDA (MOUNJARO) 15MG", category: "TIZERPATIDE", concentration: "10 mg", presentation: "CANETA | MULTIDOSE", price: 890.00, oldPrice: 1050.00, discount: "-15%", isNew: true, available: true, img: "https://silverlab.vip/manus-storage/peptide_placeholder_treated_0ef647ca.png" },
+            { id: "ULT222", brand: "PHARMACOM", name: "PHARMACOM - TURINABOL 10MG - 100 COMP", category: "Turinabol", concentration: "10 mg", presentation: "COMPRIMIDO | 100 UNID", price: 260.00, oldPrice: 300.00, discount: "-13%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV166_6c34010e.png" }
+        ];
+
+        let PRODUCTS = JSON.parse(localStorage.getItem('ultralab_products')) || DEFAULT_PRODUCTS;
+        let selectedCategory = "Todos";
+        let showAllCats = false;
+        let onlyFavorites = false;
+        let favorites = JSON.parse(localStorage.getItem('ultralab_favs') || '[]');
+        let cart = JSON.parse(localStorage.getItem('ultralab_cart') || '{}');
+        let currentStep = 1;
+        let customerData = JSON.parse(localStorage.getItem('ultralab_customer')) || {
+            cep: '', shippingType: 'SEDEX', name: '', cpf: '', phone: '', address: '', number: '', complement: '', neighborhood: '', city: '', uf: '', payment: 'PIX', notes: ''
+        };
+
+        function formatBRL(val) {
+            return Number(val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function saveCustomerData() {
+            localStorage.setItem('ultralab_customer', JSON.stringify(customerData));
+        }
+
+        function updateWhatsAppLinks() {
+            const supportUrl = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent('Olá! Tenho uma dúvida sobre o catálogo UltraLAB.')}`;
+            document.getElementById('header-wa-link').href = supportUrl;
+            document.getElementById('dock-wa-support').href = supportUrl;
+            document.getElementById('footer-wa-text').textContent = `WhatsApp: +${CONFIG.whatsapp}`;
+        }
+
+        // ============================================================================
+        // RENDERIZAÇÃO DE CATEGORIAS E PRODUTOS
+        // ============================================================================
+        function renderCategories() {
+            const nav = document.getElementById('category-nav');
+            const visibleCats = showAllCats ? CATEGORIES : CATEGORIES.slice(0, 9);
+            nav.innerHTML = visibleCats.map(c => {
+                const active = selectedCategory === c.name;
+                return `<button onclick="selectCategory('${c.name}')" type="button" class="rounded-lg px-2.5 py-2 min-h-11 text-left text-xs sm:text-sm break-words border transition-all shadow-2xs ${active ? 'bg-cyan-600 border-cyan-600 text-white font-semibold' : 'bg-white border-gray-200 text-gray-700 hover:border-cyan-500'}">
+                    ${c.name} <span class="text-[10px] opacity-75 ml-0.5">${c.count}</span>
+                </button>`;
+            }).join('');
+        }
+
+        function selectCategory(cat) {
+            selectedCategory = cat;
+            document.getElementById('current-cat-title').textContent = cat === "Todos" ? "Todos os princípios e grupos" : cat;
+            renderCategories();
+            renderProducts();
+        }
+
+        function toggleAllCategories() {
+            showAllCats = !showAllCats;
+            document.querySelector('#toggle-cats-btn span').textContent = showAllCats ? "Mostrar menos categorias" : "Ver todas as categorias";
+            renderCategories();
+        }
+
+        function toggleFavFilter() {
+            onlyFavorites = !onlyFavorites;
+            const btn = document.getElementById('fav-filter-btn');
+            btn.className = `flex items-center gap-1.5 min-h-11 px-3 rounded-lg border text-xs font-medium shadow-sm transition-colors ${onlyFavorites ? 'bg-red-50 border-red-300 text-red-700' : 'bg-white border-gray-200 text-gray-700 hover:border-cyan-500'}`;
+            renderProducts();
+        }
+
+        function toggleFavorite(id) {
+            if (favorites.includes(id)) favorites = favorites.filter(f => f !== id);
+            else favorites.push(id);
+            localStorage.setItem('ultralab_favs', JSON.stringify(favorites));
+            document.getElementById('fav-count').textContent = favorites.length;
+            renderProducts();
+        }
+
+        function shareProduct(id) {
+            const p = PRODUCTS.find(x => x.id === id);
+            if (!p) return;
+            const text = `${p.name} (${p.id}) - ${formatBRL(p.price)} no catálogo UltraLAB!`;
+            if (navigator.share) navigator.share({ title: p.name, text, url: window.location.href });
+            else { navigator.clipboard.writeText(text); alert('Link e dados do produto copiados!'); }
+        }
+
+        function showProductDetails(id) {
+            const p = PRODUCTS.find(x => x.id === id);
+            if (!p) return;
+            openModal(p.name, `
+                <div class="flex flex-col items-center mb-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <img src="${p.img}" alt="${p.name}" class="h-44 object-contain">
+                </div>
+                <div class="space-y-1.5 text-xs bg-gray-50 p-3.5 rounded-xl border border-gray-200">
+                    <p><strong>Código UltraLAB:</strong> <span class="font-mono text-cyan-700">${p.id}</span></p>
+                    <p><strong>Laboratório / Marca:</strong> ${p.brand}</p>
+                    <p><strong>Grupo / Princípio Ativo:</strong> ${p.category}</p>
+                    <p><strong>Concentração:</strong> ${p.concentration}</p>
+                    <p><strong>Apresentação:</strong> ${p.presentation}</p>
+                    <p><strong>Preço Atual:</strong> <span class="text-base font-bold text-cyan-700">${formatBRL(p.price)}</span></p>
+                </div>
+            `);
+        }
+
+        function renderProducts() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const brand = document.getElementById('catalog-brand').value;
+            const conc = document.getElementById('catalog-concentration').value;
+            const pres = document.getElementById('catalog-presentationType').value;
+            const avail = document.getElementById('catalog-availability').value;
+            const minP = parseFloat(document.getElementById('catalog-min').value) || 0;
+            const maxP = parseFloat(document.getElementById('catalog-max').value) || Infinity;
+            const sort = document.getElementById('sort-select').value;
+
+            let list = PRODUCTS.filter(p => {
+                if (selectedCategory !== "Todos" && p.category !== selectedCategory) return false;
+                if (onlyFavorites && !favorites.includes(p.id)) return false;
+                if (brand && p.brand !== brand) return false;
+                if (conc && p.concentration !== conc) return false;
+                if (pres && !p.presentation.toUpperCase().includes(pres.toUpperCase())) return false;
+                if (avail === 'available' && !p.available) return false;
+                if (avail === 'unavailable' && p.available) return false;
+                if (p.price < minP || p.price > maxP) return false;
+                if (search && !(`${p.name} ${p.brand} ${p.id} ${p.category}`).toLowerCase().includes(search)) return false;
+                return true;
+            });
+
+            if (sort === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
+            if (sort === 'price_asc') list.sort((a, b) => a.price - b.price);
+            if (sort === 'price_desc') list.sort((a, b) => b.price - a.price);
+
+            document.getElementById('products-count-label').textContent = `${list.length} produtos • todas as marcas juntas`;
+
+            const grid = document.getElementById('products-grid');
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="col-span-full bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-500 text-sm">Nenhum produto encontrado para os filtros selecionados.</div>`;
+                return;
+            }
+
+            grid.innerHTML = list.map(p => {
+                const isFav = favorites.includes(p.id);
+                const qty = cart[p.id] || 0;
+                return `
+                <article class="flex h-full min-w-0 flex-col rounded-xl border bg-white p-2.5 shadow-xs hover:shadow-md transition-shadow border-gray-200">
+                    <div class="mb-1 flex items-center justify-between gap-1">
+                        <div>${p.isNew ? '<span class="rounded-full bg-yellow-400 px-2 py-0.5 text-[10px] font-bold text-black">NOVO</span>' : ''}</div>
+                        <div class="ml-auto flex gap-1 no-print">
+                            <button onclick="shareProduct('${p.id}')" type="button" title="Compartilhar" class="h-8 w-8 rounded-lg flex items-center justify-center text-gray-500 hover:bg-cyan-50 hover:text-cyan-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg>
+                            </button>
+                            <button onclick="toggleFavorite('${p.id}')" type="button" title="Favoritar" class="h-8 w-8 rounded-lg flex items-center justify-center ${isFav ? 'text-red-500' : 'text-gray-400'} hover:bg-red-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div onclick="showProductDetails('${p.id}')" class="cursor-pointer flex aspect-square w-full shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-50 border border-gray-100 mb-2">
+                        <img alt="${p.name}" class="h-full w-full object-contain p-1.5 hover:scale-105 transition-transform" loading="lazy" src="${p.img}">
+                    </div>
+                    <p class="font-mono text-[11px] font-semibold text-cyan-700">${p.id}</p>
+                    <p class="mt-0.5 text-xs font-semibold text-emerald-700">${p.brand}</p>
+                    <h3 class="my-1.5 text-sm font-bold leading-snug text-gray-900 line-clamp-2">${p.name}</h3>
+                    <dl class="mb-2 space-y-0.5 text-xs text-gray-600">
+                        <div><dt class="inline font-medium">Concentração: </dt><dd class="inline">${p.concentration}</dd></div>
+                        <div><dt class="inline font-medium">Apresentação: </dt><dd class="inline">${p.presentation}</dd></div>
+                    </dl>
+                    <div class="mb-2 flex items-center gap-0.5 text-yellow-400 text-xs">
+                        ★★★★★ <span class="ml-1 text-[10px] text-gray-500 font-medium">4.8</span>
+                    </div>
+                    <div class="mt-auto">
+                        <p class="text-xs font-medium ${p.available ? 'text-emerald-700' : 'text-red-600'}">${p.available ? 'Disponível' : 'Sem estoque'}</p>
+                        ${p.oldPrice ? `
+                        <div class="mt-0.5 flex items-center gap-1">
+                            <p class="text-xs text-gray-400 line-through">${formatBRL(p.oldPrice)}</p>
+                            <span class="rounded bg-red-600 px-1 py-0.5 text-[10px] font-bold text-white">${p.discount}</span>
+                        </div>` : ''}
+                        <p class="text-lg font-bold text-cyan-700">${formatBRL(p.price)}</p>
+                        <div class="mt-2 flex items-center gap-1.5 no-print">
+                            ${!p.available ? `
+                                <button disabled class="min-h-11 flex-1 rounded-lg px-2 text-xs font-semibold bg-gray-200 text-gray-500 cursor-not-allowed">Indisponível</button>
+                            ` : qty === 0 ? `
+                                <button onclick="addToCart('${p.id}', 1)" class="min-h-11 flex-1 rounded-lg px-2 text-xs font-semibold text-white bg-cyan-700 hover:bg-cyan-600 transition-colors shadow-2xs">Adicionar ao carrinho</button>
+                            ` : `
+                                <div class="flex flex-1 items-center justify-between border border-cyan-600 rounded-lg min-h-11 px-2 bg-cyan-50">
+                                    <button onclick="addToCart('${p.id}', -1)" class="w-8 h-8 font-bold text-cyan-700 text-lg">-</button>
+                                    <span class="text-sm font-bold text-cyan-900">${qty}</span>
+                                    <button onclick="addToCart('${p.id}', 1)" class="w-8 h-8 font-bold text-cyan-700 text-lg">+</button>
+                                </div>
+                            `}
+                            <button onclick="showProductDetails('${p.id}')" type="button" title="Informações" class="min-h-11 min-w-10 rounded-lg flex items-center justify-center text-gray-600 hover:bg-cyan-50 border border-gray-200 shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </article>`;
+            }).join('');
+        }
+
+        // ============================================================================
+        // CARRINHO E NAVEGAÇÃO ENTRE AS 6 ETAPAS
+        // ============================================================================
+        function addToCart(id, delta) {
+            cart[id] = (cart[id] || 0) + delta;
+            if (cart[id] <= 0) delete cart[id];
+            localStorage.setItem('ultralab_cart', JSON.stringify(cart));
+            updateDock();
+            if (currentStep === 1) renderProducts();
+            else renderCheckoutStep();
+        }
+
+        function getCartTotals() {
+            let count = 0, subtotal = 0, oldSubtotal = 0;
+            const items = [];
+            for (const [id, qty] of Object.entries(cart)) {
+                const prod = PRODUCTS.find(p => p.id === id);
+                if (prod) {
+                    count += qty;
+                    subtotal += prod.price * qty;
+                    oldSubtotal += (prod.oldPrice || prod.price) * qty;
+                    items.push({ ...prod, qty });
+                }
+            }
+            const savings = Math.max(0, oldSubtotal - subtotal);
+            const freeShipping = subtotal >= CONFIG.freeShippingThreshold;
+            const baseShipping = customerData.shippingType === 'SEDEX' ? CONFIG.sedexPrice : CONFIG.pacPrice;
+            const shippingCost = count === 0 ? 0 : (freeShipping ? 0 : baseShipping);
+            const pixDiscount = customerData.payment === 'PIX' ? subtotal * 0.05 : 0;
+            const total = subtotal + shippingCost - pixDiscount;
+            return { count, subtotal, savings, freeShipping, shippingCost, pixDiscount, total, items };
+        }
+
+        function updateDock() {
+            const { count, subtotal } = getCartTotals();
+            document.getElementById('dock-items-count').textContent = `${count} ${count === 1 ? 'item' : 'itens'}`;
+            document.getElementById('dock-total-price').textContent = formatBRL(subtotal);
+            document.getElementById('dock-action-btn').disabled = count === 0;
+            document.getElementById('dock-back-btn').classList.toggle('hidden', currentStep === 1);
+            const labels = ["", "Ver Carrinho", "Escolher Entrega", "Ver Pré-Orçamento", "Preencher Dados", "Revisão Final", "Enviar no WhatsApp"];
+            document.getElementById('dock-btn-text').textContent = labels[currentStep];
+        }
+
+        function goToStep(step) {
+            if (step > 1 && getCartTotals().count === 0) return;
+            currentStep = step;
+            const titles = ["", "1 de 6 · Catálogo", "2 de 6 · Carrinho", "3 de 6 · Entrega", "4 de 6 · Pré-Orçamento", "5 de 6 · Dados", "6 de 6 · Revisão Final"];
+            document.getElementById('step-title').textContent = titles[step];
+            document.querySelectorAll('.step-bar').forEach((el, idx) => {
+                el.className = `step-bar block h-1.5 rounded-full transition-colors ${idx < step ? 'bg-cyan-600' : 'bg-gray-300'}`;
+            });
+            document.getElementById('step-1').classList.toggle('hidden', step !== 1);
+            document.getElementById('step-checkout').classList.toggle('hidden', step === 1);
+            if (step > 1) renderCheckoutStep();
+            updateDock();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function prevStep() { if (currentStep > 1) goToStep(currentStep - 1); }
+        function nextStep() { if (currentStep < 6) goToStep(currentStep + 1); else sendToWhatsApp(); }
+
+        async function fetchCep(cepValue) {
+            customerData.cep = cepValue;
+            saveCustomerData();
+            const clean = cepValue.replace(/\D/g, '');
+            if (clean.length === 8) {
+                try {
+                    const res = await fetch(`https://viacep.com.br/ws/${clean}/json/`);
+                    const data = await res.json();
+                    if (!data.erro) {
+                        customerData.address = data.logradouro || '';
+                        customerData.neighborhood = data.bairro || '';
+                        customerData.city = data.localidade || '';
+                        customerData.uf = data.uf || '';
+                        saveCustomerData();
+                        renderCheckoutStep();
+                    }
+                } catch (e) {}
+            }
+        }
+
+        function renderCheckoutStep() {
+            const { items, subtotal, savings, freeShipping, shippingCost, pixDiscount, total } = getCartTotals();
+            const box = document.getElementById('checkout-content');
+
+            if (currentStep === 2) {
+                const missingFree = Math.max(0, CONFIG.freeShippingThreshold - subtotal);
+                const pct = Math.min(100, Math.round((subtotal / CONFIG.freeShippingThreshold) * 100));
+                box.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-gray-900">2. Seu Carrinho (${items.length} produtos)</h2>
+                        <button onclick="cart={}; localStorage.setItem('ultralab_cart','{}'); goToStep(1);" class="text-xs text-red-600 hover:underline font-medium">Limpar carrinho</button>
+                    </div>
+                    <div class="mb-4 p-3 rounded-xl bg-cyan-50 border border-cyan-200">
+                        <p class="text-xs font-semibold text-cyan-900 mb-1.5">${freeShipping ? '🎉 Parabéns! Você desbloqueou Frete Grátis!' : `Faltam ${formatBRL(missingFree)} para ganhar Frete Grátis!`}</p>
+                        <div class="w-full h-2 bg-cyan-200 rounded-full overflow-hidden"><div class="h-full bg-cyan-600 transition-all" style="width:${pct}%"></div></div>
+                    </div>
+                    <div class="divide-y divide-gray-100 mb-4">
+                        ${items.map(i => `
+                            <div class="flex items-center justify-between py-3 gap-3">
+                                <img src="${i.img}" class="w-12 h-12 object-contain bg-gray-50 rounded-lg border border-gray-200 p-1 shrink-0">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-[11px] text-cyan-700 font-mono font-semibold">${i.id} • ${i.brand}</p>
+                                    <p class="text-sm font-bold text-gray-900 truncate">${i.name}</p>
+                                    <p class="text-xs text-gray-500">${formatBRL(i.price)} cada</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="addToCart('${i.id}', -1)" class="w-8 h-8 rounded-lg border border-gray-300 bg-gray-50 font-bold text-gray-700">-</button>
+                                    <span class="w-6 text-center font-bold text-sm">${i.qty}</span>
+                                    <button onclick="addToCart('${i.id}', 1)" class="w-8 h-8 rounded-lg bg-cyan-600 text-white font-bold">+</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="flex justify-between font-bold text-base pt-3 border-t border-gray-200">
+                        <span>Subtotal dos Produtos:</span>
+                        <span class="text-cyan-700">${formatBRL(subtotal)}</span>
+                    </div>
+                `;
+            } else if (currentStep === 3) {
+                box.innerHTML = `
+                    <h2 class="text-lg font-bold text-gray-900 mb-4">3. Entrega e Frete</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Digite seu CEP (preenchimento automático)</label>
+                            <input type="text" maxlength="9" value="${customerData.cep}" oninput="fetchCep(this.value)" placeholder="00000-000" class="w-full min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                            ${customerData.city ? `<p class="text-xs text-emerald-700 font-medium mt-1.5">📍 Localizado: ${customerData.address ? customerData.address + ', ' : ''}${customerData.neighborhood} — ${customerData.city}/${customerData.uf}</p>` : ''}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-2">Escolha a Modalidade de Envio Discreto</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <label class="cursor-pointer border rounded-xl p-3 flex items-center justify-between ${customerData.shippingType === 'SEDEX' ? 'border-cyan-600 bg-cyan-50/60' : 'border-gray-200'}">
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-900">SEDEX Expresso c/ Seguro</p>
+                                        <p class="text-xs text-gray-500">Prazo médio: 2 a 5 dias úteis</p>
+                                    </div>
+                                    <input type="radio" name="ship" ${customerData.shippingType === 'SEDEX' ? 'checked' : ''} onchange="customerData.shippingType='SEDEX'; saveCustomerData(); renderCheckoutStep();">
+                                </label>
+                                <label class="cursor-pointer border rounded-xl p-3 flex items-center justify-between ${customerData.shippingType === 'PAC' ? 'border-cyan-600 bg-cyan-50/60' : 'border-gray-200'}">
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-900">PAC / Transportadora</p>
+                                        <p class="text-xs text-gray-500">Prazo médio: 5 a 9 dias úteis</p>
+                                    </div>
+                                    <input type="radio" name="ship" ${customerData.shippingType === 'PAC' ? 'checked' : ''} onchange="customerData.shippingType='PAC'; saveCustomerData(); renderCheckoutStep();">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (currentStep === 4) {
+                box.innerHTML = `
+                    <h2 class="text-lg font-bold text-gray-900 mb-4">4. Pré-Orçamento</h2>
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">Forma de Pagamento Preferida</label>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <button type="button" onclick="customerData.payment='PIX'; saveCustomerData(); renderCheckoutStep();" class="p-3 rounded-xl border text-left ${customerData.payment === 'PIX' ? 'border-cyan-600 bg-cyan-50 font-bold text-cyan-900' : 'border-gray-200 text-gray-700'}">
+                                <div class="text-sm">PIX (5% OFF extra)</div>
+                                <div class="text-[11px] text-emerald-700 font-medium">Aprovação imediata</div>
+                            </button>
+                            <button type="button" onclick="customerData.payment='CARTAO'; saveCustomerData(); renderCheckoutStep();" class="p-3 rounded-xl border text-left ${customerData.payment === 'CARTAO' ? 'border-cyan-600 bg-cyan-50 font-bold text-cyan-900' : 'border-gray-200 text-gray-700'}">
+                                <div class="text-sm">Cartão / Cripto</div>
+                                <div class="text-[11px] text-gray-500">Link via atendente</div>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-sm border border-gray-200 rounded-xl p-4 bg-gray-50">
+                        <div class="flex justify-between"><span>Subtotal (${items.length} produtos):</span><span class="font-medium">${formatBRL(subtotal)}</span></div>
+                        ${savings > 0 ? `<div class="flex justify-between text-emerald-700"><span>Economia em ofertas:</span><span>- ${formatBRL(savings)}</span></div>` : ''}
+                        ${pixDiscount > 0 ? `<div class="flex justify-between text-emerald-700 font-medium"><span>Desconto PIX (5%):</span><span>- ${formatBRL(pixDiscount)}</span></div>` : ''}
+                        <div class="flex justify-between"><span>Frete (${customerData.shippingType}):</span><span class="font-medium">${freeShipping ? 'GRÁTIS' : formatBRL(shippingCost)}</span></div>
+                        <div class="flex justify-between font-bold text-base border-t border-gray-200 pt-2 mt-2 text-cyan-800"><span>Total Estimado:</span><span>${formatBRL(total)}</span></div>
+                    </div>
+                `;
+            } else if (currentStep === 5) {
+                box.innerHTML = `
+                    <h2 class="text-lg font-bold text-gray-900 mb-4">5. Dados para Envio</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                        <input placeholder="Nome Completo *" value="${customerData.name}" oninput="customerData.name=this.value; saveCustomerData();" class="sm:col-span-2 min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="CPF (apenas para postagem) *" value="${customerData.cpf}" oninput="customerData.cpf=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="WhatsApp com DDD *" value="${customerData.phone}" oninput="customerData.phone=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="Rua / Logradouro *" value="${customerData.address}" oninput="customerData.address=this.value; saveCustomerData();" class="sm:col-span-2 min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="Número e Complemento *" value="${customerData.number}" oninput="customerData.number=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="Bairro *" value="${customerData.neighborhood}" oninput="customerData.neighborhood=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="Cidade *" value="${customerData.city}" oninput="customerData.city=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="Estado (UF) *" value="${customerData.uf}" oninput="customerData.uf=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <textarea placeholder="Observações opcionais do pedido..." oninput="customerData.notes=this.value; saveCustomerData();" class="sm:col-span-2 rounded-xl bg-gray-50 border border-gray-300 p-3 h-20">${customerData.notes || ''}</textarea>
+                    </div>
+                `;
+            } else if (currentStep === 6) {
+                box.innerHTML = `
+                    <h2 class="text-lg font-bold text-gray-900 mb-3">6. Revisão Final do Pedido</h2>
+                    <div class="text-xs space-y-2 bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 text-gray-700">
+                        <p class="font-bold text-cyan-800 text-sm">ITENS DO PEDIDO:</p>
+                        ${items.map(i => `<p>• <strong>${i.qty}x</strong> [${i.id}] ${i.name} — <strong>${formatBRL(i.price * i.qty)}</strong></p>`).join('')}
+                        <hr class="border-gray-200 my-2">
+                        <p><strong>Subtotal:</strong> ${formatBRL(subtotal)}</p>
+                        <p><strong>Modalidade de Frete (${customerData.shippingType}):</strong> ${freeShipping ? 'GRÁTIS' : formatBRL(shippingCost)}</p>
+                        <p><strong>Forma de Pagamento:</strong> ${customerData.payment} ${pixDiscount > 0 ? `(-${formatBRL(pixDiscount)})` : ''}</p>
+                        <p class="text-base font-bold text-emerald-700 pt-1">TOTAL FINAL: ${formatBRL(total)}</p>
+                        <hr class="border-gray-200 my-2">
+                        <p><strong>Destinatário:</strong> ${customerData.name || 'Não informado'} | CPF: ${customerData.cpf || '-'}</p>
+                        <p><strong>Endereço:</strong> ${customerData.address}, ${customerData.number} - ${customerData.neighborhood}, ${customerData.city}/${customerData.uf} - CEP: ${customerData.cep}</p>
+                    </div>
+                    <button onclick="sendToWhatsApp()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm shadow-md flex items-center justify-center gap-2">
+                        Confirmar e Enviar Pedido no WhatsApp
+                    </button>
+                `;
+            }
+        }
+
+        function sendToWhatsApp() {
+            const { items, subtotal, freeShipping, shippingCost, pixDiscount, total } = getCartTotals();
+            const orderId = "ULT-" + Math.floor(1000 + Math.random() * 9000);
+
+            // Salva no Histórico Local ("Meus Pedidos")
+            const history = JSON.parse(localStorage.getItem('ultralab_orders') || '[]');
+            history.unshift({ id: orderId, date: new Date().toLocaleDateString('pt-BR'), total, items, status: 'Aguardando confirmação no WhatsApp' });
+            localStorage.setItem('ultralab_orders', JSON.stringify(history));
+
+            let msg = `*NOVO PEDIDO #${orderId} - UltraLAB*\n\n`;
+            msg += `*ITENS DO PEDIDO:*\n`;
+            items.forEach(i => {
+                msg += `• ${i.qty}x [${i.id}] ${i.name} — ${formatBRL(i.price * i.qty)}\n`;
+            });
+            msg += `\n*Subtotal:* ${formatBRL(subtotal)}`;
+            if (pixDiscount > 0) msg += `\n*Desconto PIX (5%):* -${formatBRL(pixDiscount)}`;
+            msg += `\n*Frete (${customerData.shippingType}):* ${freeShipping ? 'GRÁTIS' : formatBRL(shippingCost)}`;
+            msg += `\n*VALOR TOTAL:* ${formatBRL(total)}\n\n`;
+            msg += `*DADOS DE ENTREGA:*\n`;
+            msg += `Nome: ${customerData.name}\nCPF: ${customerData.cpf}\nWhatsApp: ${customerData.phone}\n`;
+            msg += `Endereço: ${customerData.address}, ${customerData.number} - ${customerData.neighborhood}\nCidade: ${customerData.city}/${customerData.uf} | CEP: ${customerData.cep}\n`;
+            if (customerData.notes) msg += `Obs: ${customerData.notes}`;
+
+            window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // ============================================================================
+        // MODAIS DO RODAPÉ, BUSCA POR VOZ E PAINEL ADMIN (/admin)
+        // ============================================================================
+        function openModal(title, htmlContent) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').innerHTML = htmlContent;
+            const m = document.getElementById('info-modal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeModal() {
+            const m = document.getElementById('info-modal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function openWelcomeModal() {
+            openModal('Boas-vindas ao UltraLAB', `
+                <p>Seja bem-vindo ao catálogo oficial de pedidos <strong>UltraLAB</strong>!</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>Navegue pelos princípios ativos ou filtre pela sua marca preferida.</li>
+                    <li>Adicione os itens ao carrinho e acompanhe as 6 etapas rápidas.</li>
+                    <li>Compras acima de <strong>R$ 1.800,00</strong> possuem <strong>Frete Grátis</strong> automático.</li>
+                    <li>No final, seu pedido gera um código único e abre direto no nosso WhatsApp oficial para pagamento e envio imediato.</li>
+                </ul>
+            `);
+        }
+
+        function openWhatsAppNews() {
+            window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent('Olá! Quero receber novidades e promoções da UltraLAB no WhatsApp.')}`, '_blank');
+        }
+
+        function openInstallModal() {
+            openModal('Instalar Aplicativo UltraLAB', `
+                <p class="font-semibold text-gray-800">📱 No iPhone (Safari):</p>
+                <p>Toque no ícone de <strong>Compartilhar</strong> na barra inferior e selecione <strong>"Adicionar à Tela de Início"</strong>.</p>
+                <p class="font-semibold text-gray-800 mt-3">🤖 No Android (Chrome):</p>
+                <p>Toque nos <strong>3 pontinhos</strong> no canto superior direito e selecione <strong>"Instalar aplicativo"</strong> ou "Adicionar à tela inicial".</p>
+            `);
+        }
+
+        function openTrackModal() {
+            openModal('Rastrear Pedido', `
+                <p>Digite o número do seu pedido (ex: <code>ULT-1234</code>) ou código de rastreio:</p>
+                <div class="flex gap-2 mt-2">
+                    <input id="track-input" placeholder="Código do pedido ou Correios" class="flex-1 min-h-11 rounded-xl border border-gray-300 px-3 text-sm">
+                    <button onclick="checkTracking()" class="px-4 bg-cyan-600 text-white rounded-xl font-semibold text-xs">Consultar</button>
+                </div>
+                <div id="track-result" class="mt-3 text-xs"></div>
+            `);
+        }
+
+        function checkTracking() {
+            const code = document.getElementById('track-input').value.trim().toUpperCase();
+            const orders = JSON.parse(localStorage.getItem('ultralab_orders') || '[]');
+            const found = orders.find(o => o.id === code || `#${o.id}` === code);
+            const res = document.getElementById('track-result');
+            if (found) {
+                res.innerHTML = `<div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900"><strong>Pedido #${found.id}</strong> (${found.date})<br>Status: ${found.status}<br>Valor: ${formatBRL(found.total)}</div>`;
+            } else {
+                res.innerHTML = `<div class="p-3 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-900">Para consultar o código de postagem atualizado do objeto <strong>${code || 'informado'}</strong>, clique abaixo para falar com nossa expedição:<br><a href="https://wa.me/${CONFIG.whatsapp}?text=Ol%C3%A1!%20Quero%20rastrear%20meu%20pedido%20${encodeURIComponent(code)}" target="_blank" class="inline-block mt-2 font-bold underline">Consultar expedição no WhatsApp →</a></div>`;
+            }
+        }
+
+        function openHistoryModal() {
+            const orders = JSON.parse(localStorage.getItem('ultralab_orders') || '[]');
+            if (orders.length === 0) {
+                openModal('Meus Pedidos', '<p>Você ainda não realizou nenhum pedido neste dispositivo.</p>');
+                return;
+            }
+            openModal('Meus Pedidos Recentes', orders.map(o => `
+                <div class="p-3 rounded-xl border border-gray-200 bg-gray-50 flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-gray-900">#${o.id} — ${formatBRL(o.total)}</p>
+                        <p class="text-xs text-gray-500">Data: ${o.date} • ${o.items.length} itens</p>
+                    </div>
+                    <button onclick='reorder(${JSON.stringify(o.items)})' class="px-3 py-1.5 bg-cyan-600 text-white rounded-lg text-xs font-semibold">Refazer pedido</button>
+                </div>
+            `).join(''));
+        }
+
+        function reorder(items) {
+            cart = {};
+            items.forEach(i => { cart[i.id] = i.qty; });
+            localStorage.setItem('ultralab_cart', JSON.stringify(cart));
+            closeModal();
+            goToStep(2);
+        }
+
+        function openAboutModal() {
+            openModal('Sobre a UltraLAB', `
+                <p>A <strong>UltraLAB</strong> é referência nacional na distribuição de produtos originais dos melhores laboratórios internacionais (Alpha Pharma, Cooper, Landerlan, Pharmacom, ZPHC, Bratva e Canada Labs).</p>
+                <p>Garantimos <strong>embalagem 100% discreta</strong>, seguro total de envio e suporte especializado pelo WhatsApp do início ao pós-venda.</p>
+            `);
+        }
+
+        function openPartnerModal() {
+            openModal('Seja Parceiro / Afiliado UltraLAB', `
+                <p>Trabalha com assessoria esportiva, consultoria ou revenda? Conheça nossa tabela especial para parceiros e afiliados UltraLAB.</p>
+                <a href="https://wa.me/${CONFIG.whatsapp}?text=Ol%C3%A1!%20Tenho%20interesse%20em%20ser%20parceiro/revendedor%20UltraLAB." target="_blank" class="block text-center w-full py-3 bg-emerald-600 text-white font-bold rounded-xl mt-3">Falar com Setor de Parcerias no WhatsApp</a>
+            `);
+        }
+
+        function openQrModal() {
+            const url = encodeURIComponent(window.location.href);
+            openModal('QR Code do Catálogo UltraLAB', `
+                <div class="flex flex-col items-center text-center">
+                    <p class="mb-3">Aponte a câmera do celular para compartilhar ou abrir o catálogo:</p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${url}" alt="QR Code UltraLAB" class="w-48 h-48 border p-2 rounded-xl">
+                </div>
+            `);
+        }
+
+        function openFaqModal() {
+            openModal('Perguntas Frequentes (FAQ)', `
+                <div class="space-y-3">
+                    <div><p class="font-bold text-gray-900">1. Os produtos são originais?</p><p class="text-xs">Sim! Todos os produtos possuem QR Code/Scratch code de verificação diretamente no site oficial de cada laboratório.</p></div>
+                    <div><p class="font-bold text-gray-900">2. Como é feita a embalagem?</p><p class="text-xs">Enviamos em embalagem 100% discreta, descaracterizada e protegida contra impactos, sem nenhuma menção ao conteúdo externo.</p></div>
+                    <div><p class="font-bold text-gray-900">3. Quais as formas de pagamento?</p><p class="text-xs">Aceitamos PIX (com 5% de desconto imediato), Cartão de Crédito via link seguro e Criptomoedas.</p></div>
+                    <div><p class="font-bold text-gray-900">4. Tem seguro de entrega?</p><p class="text-xs">Sim! Na modalidade com seguro, garantimos 100% de reenvio sem custo caso ocorra qualquer extravio no transporte.</p></div>
+                </div>
+            `);
+        }
+
+       function openAdminModal() {
+    window.location.href = 'admin.html';
+}
+
+        function adminAddProduct() {
+            const p = {
+                id: document.getElementById('adm-id').value || ('ULT' + Math.floor(Math.random()*900)),
+                brand: document.getElementById('adm-brand').value || 'ULTRA',
+                name: document.getElementById('adm-name').value || 'Novo Produto UltraLAB',
+                category: document.getElementById('adm-cat').value || 'Testosterona',
+                concentration: '250 mg/ml',
+                presentation: 'FRASCO | 10ML',
+                price: parseFloat(document.getElementById('adm-price').value) || 190,
+                oldPrice: null, discount: null, isNew: true, available: true,
+                img: "https://silverlab.vip/manus-storage/peptide_placeholder_treated_0ef647ca.png"
+            };
+            PRODUCTS.unshift(p);
+            localStorage.setItem('ultralab_products', JSON.stringify(PRODUCTS));
+            renderProducts();
+            closeModal();
+            alert('Produto adicionado ao catálogo!');
+        }
+
+        function startVoiceSearch() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) { alert("Seu navegador não suporta busca por voz."); return; }
+            const rec = new SpeechRecognition();
+            rec.lang = 'pt-BR';
+            rec.onresult = (e) => {
+                document.getElementById('search-input').value = e.results[0][0].transcript;
+                renderProducts();
+            };
+            rec.start();
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('catalog-brand').value = '';
+            document.getElementById('catalog-concentration').value = '';
+            document.getElementById('catalog-presentationType').value = '';
+            document.getElementById('catalog-availability').value = 'all';
+            document.getElementById('catalog-min').value = '';
+            document.getElementById('catalog-max').value = '';
+            selectedCategory = "Todos";
+            onlyFavorites = false;
+            renderCategories();
+            renderProducts();
+        }
+
+        function toggleMobileFilters() {
+            document.getElementById('filters-sidebar').classList.toggle('hidden');
+        }
+
+        // Inicialização
+        document.getElementById('fav-count').textContent = favorites.length;
+        updateWhatsAppLinks();
+        renderCategories();
+        renderProducts();
+        updateDock();
+    </script>
+<!-- SINCRONIZAÇÃO EM TEMPO REAL COM O SUPABASE -->
+    <script type="module">
+        import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+        const SUPABASE_URL = "https://ksyqkuhfwracouerufue.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_YT10tlGwEOj6WuC0p0d0QQ_X1CA00_v";
+
+        if (SUPABASE_URL.startsWith("https://")) {
+            const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            // 1. Puxa Configurações da Loja
+            supabase.from('settings').select('*').eq('id', 'store').single().then(({ data }) => {
+                if (data && data.data) {
+                    CONFIG = data.data;
+                    localStorage.setItem('ultralab_config', JSON.stringify(CONFIG));
+                    updateWhatsAppLinks();
+                }
+            });
+
+            // 2. Puxa os Produtos atualizados do Supabase sem travar
+            supabase.from('products').select('*').then(({ data }) => {
+                if (data && data.length > 0) {
+                    PRODUCTS = data.map(row => row.data);
+                    localStorage.setItem('ultralab_products', JSON.stringify(PRODUCTS));
+                    renderCategories();
+                    renderProducts();
+                    console.log("⚡ Produtos locais do Supabase carregados com sucesso no Index!");
+                }
+            });
+
+            // 3. Salva o Pedido no Supabase quando o cliente envia pro WhatsApp
+            const originalSend = window.sendToWhatsApp;
+            window.sendToWhatsApp = async function() {
+                const { items, total } = getCartTotals();
+                const orderId = "ULT-" + Math.floor(1000 + Math.random() * 9000);
+                window._pendingOrderId = orderId;
+                const orderObj = {
+                    id: orderId,
+                    timestamp: Date.now(),
+                    date: new Date().toLocaleDateString('pt-BR'),
+                    customerName: customerData.name || 'Cliente',
+                    customerPhone: customerData.phone || '',
+                    cityUf: `${customerData.city}/${customerData.uf}`,
+                    cep: customerData.cep || '',
+                    shippingType: customerData.shippingType,
+                    total,
+                    items: items.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })),
+                    status: 'Aguardando confirmação no WhatsApp',
+                    trackingCode: ''
+                };
+                await supabase.from('orders').upsert({ id: orderId, timestamp: orderObj.timestamp, data: orderObj });
+                originalSend();
+            };
+
+            // 4. Rastreio Real consultando o Supabase
+            window.checkTracking = async function() {
+                const code = document.getElementById('track-input').value.trim().toUpperCase().replace('#', '');
+                const res = document.getElementById('track-result');
+                res.innerHTML = 'Consultando base de envios...';
+                const { data } = await supabase.from('orders').select('*').eq('id', code).single();
+                if (data && data.data) {
+                    const o = data.data;
+                    res.innerHTML = `
+                        <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1">
+                            <p class="font-bold text-sm">Pedido #${o.id} (${o.date})</p>
+                            <p><strong>Status Atual:</strong> ${o.status}</p>
+                            <p><strong>Destino:</strong> ${o.cityUf}</p>
+                            ${o.trackingCode ? `<p class="pt-1 font-mono font-bold text-cyan-800">📮 Código Rastreio: ${o.trackingCode}</p>` : '<p class="text-gray-500">Código de postagem será inserido assim que despachado.</p>'}
+                        </div>`;
+                } else {
+                    res.innerHTML = `<div class="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800">Pedido <strong>#${code}</strong> não localizado. Verifique o código enviado no seu WhatsApp.</div>`;
+                }
+            };
+        }
+    </script>
+</body>
+</html>

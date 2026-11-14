@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Painel Admin — UltraLAB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100 text-gray-900">
+
+    <!-- TELA DE LOGIN ADMIN -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white border border-gray-200 rounded-2xl max-w-sm w-full p-6 shadow-xl">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-600 to-blue-900 flex items-center justify-center text-white font-bold">ULT</div>
+                <div>
+                    <h1 class="text-xl font-bold">Ultra<span class="text-cyan-600">LAB</span> Admin</h1>
+                    <p class="text-xs text-gray-500">Gestão de Catálogo e Pedidos</p>
+                </div>
+            </div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Senha de Acesso</label>
+            <!-- O type="password" faz os caracteres virarem bolinhas pretas (••••) -->
+<input id="admin-pass" type="password" placeholder="Digite a senha de acesso" class="...">
+            <button onclick="checkLogin()" class="w-full h-11 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl text-sm transition-colors">Entrar no Painel</button>
+            <a href="index.html" class="block text-center text-xs text-gray-400 hover:text-cyan-600 mt-4">← Voltar para a loja</a>
+        </div>
+    </div>
+
+    <!-- DASHBOARD ADMIN -->
+    <div id="admin-dashboard" class="hidden">
+        <!-- Topo -->
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+            <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-full bg-cyan-600 text-white font-bold text-xs flex items-center justify-center">ULT</div>
+                    <div>
+                        <h1 class="text-base font-bold leading-none">Painel UltraLAB</h1>
+                        <span id="db-status" class="text-[11px] text-amber-600 font-medium">Conectando banco...</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="seedDatabase()" class="px-3 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 rounded-xl text-xs font-semibold transition-colors">⚡ Popular Produtos Base</button>
+                    <a href="index.html" target="_blank" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-semibold">Ver Loja ↗</a>
+                </div>
+            </div>
+            <!-- Abas -->
+            <div class="max-w-6xl mx-auto px-4 flex gap-6 border-t border-gray-100 text-sm font-semibold">
+                <button onclick="switchTab('orders')" id="tab-orders" class="py-3 border-b-2 border-cyan-600 text-cyan-700">📦 Pedidos & Rastreio</button>
+                <button onclick="switchTab('products')" id="tab-products" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800">💊 Produtos (<span id="adm-prod-count">0</span>)</button>
+                <button onclick="switchTab('settings')" id="tab-settings" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800">⚙️ Configurações</button>
+            </div>
+        </header>
+
+        <main class="max-w-6xl mx-auto p-4 sm:p-6">
+            
+            <!-- ABA 1: PEDIDOS E RASTREIO -->
+            <section id="sec-orders" class="space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="text-lg font-bold">Pedidos Recebidos & Códigos de Rastreio</h2>
+                    <button onclick="loadOrders()" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs font-semibold hover:bg-gray-50">🔄 Atualizar Lista</button>
+                </div>
+                <div id="orders-list" class="space-y-3"></div>
+            </section>
+
+            <!-- ABA 2: PRODUTOS -->
+            <section id="sec-products" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+                    <h3 class="text-sm font-bold mb-3 text-cyan-800">+ Cadastrar ou Editar Produto</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-xs">
+                        <input id="p-id" placeholder="Código (ex: ULT037)" class="h-10 rounded-lg border border-gray-300 px-3 font-mono">
+                        <input id="p-brand" placeholder="Marca (ex: ALPHA)" class="h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-name" placeholder="Nome completo do produto" class="sm:col-span-2 h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-cat" placeholder="Categoria (ex: Testosterona)" class="h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-conc" placeholder="Concentração (250 mg/ml)" class="h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-pres" placeholder="Apresentação (FRASCO 10ML)" class="h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-price" type="number" step="0.01" placeholder="Preço Atual (R$)" class="h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-oldprice" type="number" step="0.01" placeholder="Preço Antigo Riscado (opcional)" class="h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-img" placeholder="URL da Foto (ou ./img/produtos/ULT...)" class="sm:col-span-2 h-10 rounded-lg border border-gray-300 px-3">
+                        <button onclick="saveProduct()" class="h-10 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg">Salvar Produto</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-2">
+                    <input id="adm-search" oninput="renderAdminProducts()" placeholder="Filtrar produto por nome, código ou marca..." class="w-full max-w-md h-10 rounded-xl bg-white border border-gray-300 px-3 text-xs">
+                </div>
+
+                <div id="admin-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+            </section>
+
+            <!-- ABA 3: CONFIGURAÇÕES -->
+            <section id="sec-settings" class="hidden max-w-lg">
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-4">
+                    <h2 class="text-lg font-bold">Configurações da Loja</h2>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">WhatsApp Oficial (Apenas números com 55 + DDD)</label>
+                        <input id="cfg-wa" type="text" placeholder="5531973524048" class="w-full h-11 rounded-xl border border-gray-300 px-3 text-sm">
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Meta Frete Grátis (R$)</label>
+                            <input id="cfg-free" type="number" class="w-full h-11 rounded-xl border border-gray-300 px-3 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Valor SEDEX (R$)</label>
+                            <input id="cfg-sedex" type="number" class="w-full h-11 rounded-xl border border-gray-300 px-3 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Valor PAC (R$)</label>
+                            <input id="cfg-pac" type="number" class="w-full h-11 rounded-xl border border-gray-300 px-3 text-sm">
+                        </div>
+                    </div>
+                    <button onclick="saveSettings()" class="w-full h-11 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm">Salvar Configurações em Tempo Real</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- FIREBASE SDK -->
+    <!-- SUPABASE SDK NO ADMIN.HTML -->
+    <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Painel Admin — UltraLAB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100 text-gray-900">
+
+    <!-- TELA DE LOGIN ADMIN -->
+   
+
+    <!-- DASHBOARD ADMIN -->
+    <div id="admin-dashboard" class="hidden">
+        <!-- Topo -->
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+            <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-full bg-cyan-600 text-white font-bold text-xs flex items-center justify-center">ULT</div>
+                    <div>
+                        <h1 class="text-base font-bold leading-none">Painel UltraLAB</h1>
+                        <span id="db-status" class="text-[11px] text-amber-600 font-medium">Conectando banco...</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="seedDatabase()" class="px-3 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 rounded-xl text-xs font-semibold transition-colors">⚡ Popular Produtos Base</button>
+                    <a href="index.html" target="_blank" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-semibold">Ver Loja ↗</a>
+                </div>
+            </div>
+            <!-- Abas -->
+            <div class="max-w-6xl mx-auto px-4 flex gap-6 border-t border-gray-100 text-sm font-semibold">
+                <button onclick="switchTab('orders')" id="tab-orders" class="py-3 border-b-2 border-cyan-600 text-cyan-700">📦 Pedidos & Rastreio</button>
+                <button onclick="switchTab('products')" id="tab-products" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800">💊 Produtos (<span id="adm-prod-count">0</span>)</button>
+                <button onclick="switchTab('settings')" id="tab-settings" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800">⚙️ Configurações</button>
+            </div>
+        </header>
+
+        <main class="max-w-6xl mx-auto p-4 sm:p-6">
+            
+            <!-- ABA 1: PEDIDOS E RASTREIO -->
+            <section id="sec-orders" class="space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="text-lg font-bold">Pedidos Recebidos & Códigos de Rastreio</h2>
+                    <button onclick="loadOrders()" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs font-semibold hover:bg-gray-50">🔄 Atualizar Lista</button>
+                </div>
+                <div id="orders-list" class="space-y-3"></div>
+            </section>
+
+            <!-- ABA 2: PRODUTOS -->
+            <section id="sec-products" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+                    <h3 class="text-sm font-bold mb-3 text-cyan-800">+ Cadastrar ou Editar Produto</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-xs">
+                        <input id="p-id" placeholder="Código (ex: ULT037)" class="h-10 rounded-lg border border-gray-300 px-3 font-mono">
+                        <input id="p-brand" placeholder="Marca (ex: ALPHA)" class="h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-name" placeholder="Nome completo do produto" class="sm:col-span-2 h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-cat" placeholder="Categoria (ex: Testosterona)" class="h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-conc" placeholder="Concentração (250 mg/ml)" class="h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-pres" placeholder="Apresentação (FRASCO 10ML)" class="h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-price" type="number" step="0.01" placeholder="Preço Atual (R$)" class="h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-oldprice" type="number" step="0.01" placeholder="Preço Antigo Riscado (opcional)" class="h-10 rounded-lg border border-gray-300 px-3">
+                        <input id="p-img" placeholder="URL da Foto (ou ./img/produtos/ULT...)" class="sm:col-span-2 h-10 rounded-lg border border-gray-300 px-3">
+                        <button onclick="saveProduct()" class="h-10 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg">Salvar Produto</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-2">
+                    <input id="adm-search" oninput="renderAdminProducts()" placeholder="Filtrar produto por nome, código ou marca..." class="w-full max-w-md h-10 rounded-xl bg-white border border-gray-300 px-3 text-xs">
+                </div>
+
+                <div id="admin-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+            </section>
+
+            <!-- ABA 3: CONFIGURAÇÕES -->
+            <section id="sec-settings" class="hidden max-w-lg">
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-4">
+                    <h2 class="text-lg font-bold">Configurações da Loja</h2>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">WhatsApp Oficial (Apenas números com 55 + DDD)</label>
+                        <input id="cfg-wa" type="text" placeholder="5531973524048" class="w-full h-11 rounded-xl border border-gray-300 px-3 text-sm">
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Meta Frete Grátis (R$)</label>
+                            <input id="cfg-free" type="number" class="w-full h-11 rounded-xl border border-gray-300 px-3 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Valor SEDEX (R$)</label>
+                            <input id="cfg-sedex" type="number" class="w-full h-11 rounded-xl border border-gray-300 px-3 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Valor PAC (R$)</label>
+                            <input id="cfg-pac" type="number" class="w-full h-11 rounded-xl border border-gray-300 px-3 text-sm">
+                        </div>
+                    </div>
+                    <button onclick="saveSettings()" class="w-full h-11 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm">Salvar Configurações em Tempo Real</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- SUPABASE SDK NO ADMIN.HTML -->
+    <script type="module">
+        import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+        const SUPABASE_URL = "https://ksyqkuhfwracouerufue.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_YT10tlGwEOj6WuC0p0d0QQ_X1CA00_v";
+
+        let supabase = null;
+        let isCloudActive = SUPABASE_URL.startsWith("https://");
+
+        if (isCloudActive) {
+            supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+            document.getElementById('db-status').textContent = "🟢 Conectado ao Supabase Cloud";
+            document.getElementById('db-status').className = "text-[11px] text-emerald-600 font-semibold";
+        } else {
+            document.getElementById('db-status').textContent = "🟡 Modo Local";
+        }
+
+        let products = JSON.parse(localStorage.getItem('ultralab_products_v2') || '[]');
+        let orders = JSON.parse(localStorage.getItem('ultralab_orders') || '[]');
+        let config = JSON.parse(localStorage.getItem('ultralab_config')) || { whatsapp: "5531973524048", freeShippingThreshold: 1800, sedexPrice: 45, pacPrice: 30 };
+
+        window.checkLogin = () => {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === 'ultra2026' || pass === 'admin123') {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                initAdmin();
+            } else {
+                alert('Senha incorreta!');
+            }
+        };
+
+        window.switchTab = (tab) => {
+            ['orders', 'products', 'settings'].forEach(t => {
+                document.getElementById(`sec-${t}`).classList.toggle('hidden', t !== tab);
+                document.getElementById(`tab-${t}`).className = t === tab
+                    ? "py-3 border-b-2 border-cyan-600 text-cyan-700"
+                    : "py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800";
+            });
+        };
+
+        async function initAdmin() {
+            await loadOrders();
+            await loadProducts();
+            await loadSettings();
+        }
+
+        window.loadOrders = async () => {
+            if (isCloudActive) {
+                const { data } = await supabase.from('orders').select('*').order('timestamp', { ascending: false });
+                if (data) orders = data.map(r => r.data);
+            } else {
+                orders = JSON.parse(localStorage.getItem('ultralab_orders') || '[]');
+            }
+            renderOrders();
+        };
+
+        function renderOrders() {
+            const box = document.getElementById('orders-list');
+            if (orders.length === 0) {
+                box.innerHTML = `<div class="bg-white p-6 rounded-xl border border-gray-200 text-center text-gray-500 text-sm">Nenhum pedido registrado ainda.</div>`;
+                return;
+            }
+            box.innerHTML = orders.map(o => `
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-2xs flex flex-col sm:flex-row justify-between gap-4">
+                    <div class="space-y-1 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono font-bold text-sm text-cyan-700">#${o.id}</span>
+                            <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-cyan-50 text-cyan-800 border border-cyan-200">${o.status || 'Aguardando'}</span>
+                            <span class="text-gray-400">${o.date || ''}</span>
+                        </div>
+                        <p class="font-bold text-gray-900">Cliente: ${o.customerName || 'Não informado'} | WhatsApp: ${o.customerPhone || '-'}</p>
+                        <p class="text-gray-600">Destino: ${o.cityUf || '-'} (CEP: ${o.cep || '-'}) • Modalidade: ${o.shippingType || 'SEDEX'}</p>
+                        <p class="text-emerald-700 font-bold text-sm">Total: R$ ${Number(o.total || 0).toFixed(2)}</p>
+                    </div>
+                    <div class="flex flex-col sm:items-end justify-center gap-2 min-w-[260px]">
+                        <select id="st-${o.id}" class="w-full h-9 rounded-lg border border-gray-300 px-2 text-xs bg-gray-50">
+                            <option value="Aguardando Pagamento" ${o.status==='Aguardando Pagamento'?'selected':''}>⏳ Aguardando Pagamento</option>
+                            <option value="Pagamento Confirmado / Em Separação" ${o.status==='Pagamento Confirmado / Em Separação'?'selected':''}>📦 Em Separação</option>
+                            <option value="Objeto Postado / Em Trânsito" ${o.status==='Objeto Postado / Em Trânsito'?'selected':''}>🚚 Objeto Postado / Enviado</option>
+                            <option value="Pedido Entregue" ${o.status==='Pedido Entregue'?'selected':''}>✅ Pedido Entregue</option>
+                        </select>
+                        <div class="flex gap-1.5 w-full">
+                            <input id="trk-${o.id}" value="${o.trackingCode || ''}" placeholder="Cód. Rastreio (ex: AA123456789BR)" class="flex-1 h-9 rounded-lg border border-gray-300 px-2.5 text-xs font-mono uppercase">
+                            <button onclick="updateOrderTracking('${o.id}')" class="px-3 h-9 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-bold">Salvar</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.updateOrderTracking = async (orderId) => {
+            const status = document.getElementById(`st-${orderId}`).value;
+            const trackingCode = document.getElementById(`trk-${orderId}`).value.trim().toUpperCase();
+            const idx = orders.findIndex(o => o.id === orderId);
+            if (idx > -1) {
+                orders[idx].status = status;
+                orders[idx].trackingCode = trackingCode;
+                localStorage.setItem('ultralab_orders', JSON.stringify(orders));
+                if (isCloudActive) {
+                    await supabase.from('orders').upsert({ id: orderId, timestamp: orders[idx].timestamp || Date.now(), data: orders[idx] });
+                }
+            }
+            alert(`Pedido #${orderId} atualizado com sucesso!`);
+            renderOrders();
+        };
+
+        async function loadProducts() {
+            if (isCloudActive) {
+                const { data } = await supabase.from('products').select('*');
+                if (data && data.length > 0) {
+                    products = data.map(r => r.data);
+                }
+            }
+            if (products.length <= 30) {
+                try {
+                    const res = await fetch('./produtos-ultralab.json');
+                    if (res.ok) products = await res.json();
+                } catch (e) {}
+            }
+            document.getElementById('adm-prod-count').textContent = products.length;
+            renderAdminProducts();
+        }
+
+        window.renderAdminProducts = () => {
+            const q = (document.getElementById('adm-search').value || '').toLowerCase();
+            const filtered = products.filter(p => (`${p.id} ${p.name} ${p.brand}`).toLowerCase().includes(q));
+            document.getElementById('adm-prod-count').textContent = products.length;
+            document.getElementById('admin-products-grid').innerHTML = filtered.map(p => `
+                <div class="bg-white p-3 rounded-xl border border-gray-200 flex items-center justify-between gap-3">
+                    <img src="${p.img}" class="w-12 h-12 object-contain bg-gray-50 rounded-lg border p-1 shrink-0">
+                    <div class="flex-1 min-w-0 text-xs">
+                        <p class="font-mono font-bold text-cyan-700">${p.id} • ${p.brand}</p>
+                        <p class="font-bold text-gray-900 truncate">${p.name}</p>
+                        <p class="text-emerald-700 font-bold">R$ ${Number(p.price).toFixed(2)}</p>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <button onclick="toggleStock('${p.id}')" class="px-2.5 py-1 rounded text-[11px] font-bold ${p.available ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-700'}">
+                            ${p.available ? 'Em Estoque' : 'Esgotado'}
+                        </button>
+                        <button onclick="editProdForm('${p.id}')" class="px-2.5 py-1 rounded text-[11px] bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium">Editar</button>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        window.editProdForm = (id) => {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('p-id').value = p.id;
+            document.getElementById('p-brand').value = p.brand;
+            document.getElementById('p-name').value = p.name;
+            document.getElementById('p-cat').value = p.category;
+            document.getElementById('p-conc').value = p.concentration;
+            document.getElementById('p-pres').value = p.presentation;
+            document.getElementById('p-price').value = p.price;
+            document.getElementById('p-oldprice').value = p.oldPrice || '';
+            document.getElementById('p-img').value = p.img;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.saveProduct = async () => {
+            const id = document.getElementById('p-id').value.trim().toUpperCase() || ('ULT' + Math.floor(100 + Math.random()*899));
+            const price = parseFloat(document.getElementById('p-price').value) || 0;
+            const oldPrice = parseFloat(document.getElementById('p-oldprice').value) || null;
+            const discount = (oldPrice && oldPrice > price) ? `-${Math.round(((oldPrice - price) / oldPrice) * 100)}%` : null;
+
+            const prod = {
+                id,
+                brand: document.getElementById('p-brand').value.trim() || 'ULTRA',
+                name: document.getElementById('p-name').value.trim() || 'Produto UltraLAB',
+                category: document.getElementById('p-cat').value.trim() || 'Testosterona',
+                concentration: document.getElementById('p-conc').value.trim() || '250 mg/ml',
+                presentation: document.getElementById('p-pres').value.trim() || 'FRASCO | 10ML',
+                price, oldPrice, discount,
+                isNew: true, available: true,
+                img: document.getElementById('p-img').value.trim() || './img/produtos/placeholder-ultralab.png'
+            };
+
+            const existingIdx = products.findIndex(x => x.id === id);
+            if (existingIdx > -1) products[existingIdx] = prod;
+            else products.unshift(prod);
+
+            localStorage.setItem('ultralab_products_v2', JSON.stringify(products));
+            if (isCloudActive) await supabase.from('products').upsert({ id, data: prod });
+            renderAdminProducts();
+            alert(`Produto ${id} salvo!`);
+        };
+
+        window.toggleStock = async (id) => {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+            p.available = !p.available;
+            localStorage.setItem('ultralab_products_v2', JSON.stringify(products));
+            if (isCloudActive) await supabase.from('products').upsert({ id, data: p });
+            renderAdminProducts();
+        };
+
+        async function loadSettings() {
+            if (isCloudActive) {
+                const { data } = await supabase.from('settings').select('*').eq('id', 'store').single();
+                if (data && data.data) config = data.data;
+            }
+            document.getElementById('cfg-wa').value = config.whatsapp || '';
+            document.getElementById('cfg-free').value = config.freeShippingThreshold || 1800;
+            document.getElementById('cfg-sedex').value = config.sedexPrice || 45;
+            document.getElementById('cfg-pac').value = config.pacPrice || 30;
+        }
+
+        window.saveSettings = async () => {
+            config = {
+                whatsapp: document.getElementById('cfg-wa').value.replace(/\D/g, ''),
+                freeShippingThreshold: parseFloat(document.getElementById('cfg-free').value) || 1800,
+                sedexPrice: parseFloat(document.getElementById('cfg-sedex').value) || 45,
+                pacPrice: parseFloat(document.getElementById('cfg-pac').value) || 30
+            };
+            localStorage.setItem('ultralab_config', JSON.stringify(config));
+            if (isCloudActive) await supabase.from('settings').upsert({ id: 'store', data: config });
+            alert('Configurações salvas em tempo real!');
+        };
+
+        window.seedDatabase = async () => {
+            try {
+                const res = await fetch('./produtos-ultralab.json');
+                if (res.ok) products = await res.json();
+            } catch (e) {}
+
+            if (!confirm(`Deseja sincronizar todos os ${products.length} produtos no Supabase agora?`)) return;
+            if (isCloudActive) {
+                const rows = products.map(p => ({ id: p.id, data: p }));
+                const { error } = await supabase.from('products').upsert(rows);
+                if (error) alert('Erro ao subir: ' + error.message);
+                else alert(`🎉 Sucesso! Todos os ${products.length} produtos estão salvos no Supabase!`);
+            } else {
+                localStorage.setItem('ultralab_products_v2', JSON.stringify(products));
+                alert(`🎉 ${products.length} produtos carregados localmente!`);
+            }
+            renderAdminProducts();
+        };
+    </script>
+</body>
+</html>
