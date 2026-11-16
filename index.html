@@ -324,8 +324,8 @@
             <p class="text-gray-700 font-medium mt-2">UltraLAB — Qualidade e confiança em cada produto</p>
         </div>
         <div class="mt-4 pt-3 border-t border-gray-200 flex justify-between items-center">
-            <button onclick="openAdminModal()" class="text-[11px] text-gray-400 hover:text-cyan-600 transition-colors">Área administrativa</button>
-            <span class="text-[10px] text-gray-400">© 2026 UltraLAB</span>
+            <span class="text-[10px] text-gray-400">Envio 100% discreto com seguro</span>
+            <span onclick="handleSecretAdminTap()" class="text-[10px] text-gray-400 select-none cursor-default">© 2026 UltraLAB</span>
         </div>
     </footer>
 
@@ -346,7 +346,7 @@
         // CONFIGURAÇÕES GERAIS DO PROJETO ULTRALAB
         // ============================================================================
         let CONFIG = JSON.parse(localStorage.getItem('ultralab_config')) || {
-            whatsapp: "5531973524048", // Troque aqui ou pelo Painel Admin (senha: admin123)
+            whatsapp: "5531973524048",
             freeShippingThreshold: 1800,
             sedexPrice: 45,
             pacPrice: 30
@@ -411,7 +411,7 @@
             { id: "ULT222", brand: "PHARMACOM", name: "PHARMACOM - TURINABOL 10MG - 100 COMP", category: "Turinabol", concentration: "10 mg", presentation: "COMPRIMIDO | 100 UNID", price: 260.00, oldPrice: 300.00, discount: "-13%", isNew: false, available: true, img: "https://silverlab.vip/manus-storage/produtos/SLV166_6c34010e.png" }
         ];
 
-        let PRODUCTS = JSON.parse(localStorage.getItem('ultralab_products')) || DEFAULT_PRODUCTS;
+        let PRODUCTS = JSON.parse(localStorage.getItem('ultralab_products_v2') || localStorage.getItem('ultralab_products') || 'null') || DEFAULT_PRODUCTS;
         let selectedCategory = "Todos";
         let showAllCats = false;
         let onlyFavorites = false;
@@ -421,6 +421,23 @@
         let customerData = JSON.parse(localStorage.getItem('ultralab_customer')) || {
             cep: '', shippingType: 'SEDEX', name: '', cpf: '', phone: '', address: '', number: '', complement: '', neighborhood: '', city: '', uf: '', payment: 'PIX', notes: ''
         };
+
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function isValidCPF(cpf) {
+            cpf = String(cpf || '').replace(/\D/g, '');
+            if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+            const nums = cpf.split('').map(Number);
+            const rest = (count) => (nums.slice(0, count - 12).reduce((sum, el, idx) => sum + el * (count - idx), 0) * 10) % 11 % 10;
+            return rest(10) === nums[9] && rest(11) === nums[10];
+        }
 
         function formatBRL(val) {
             return Number(val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -435,18 +452,28 @@
             document.getElementById('header-wa-link').href = supportUrl;
             document.getElementById('dock-wa-support').href = supportUrl;
             document.getElementById('footer-wa-text').textContent = `WhatsApp: +${CONFIG.whatsapp}`;
+            const badge = document.getElementById('free-shipping-badge');
+            if (badge && CONFIG.freeShippingThreshold) {
+                badge.textContent = `Frete Grátis acima de R$ ${Number(CONFIG.freeShippingThreshold).toLocaleString('pt-BR')}`;
+            }
         }
 
         // ============================================================================
         // RENDERIZAÇÃO DE CATEGORIAS E PRODUTOS
         // ============================================================================
+        function getCategoryCount(catName) {
+            if (catName === "Todos") return PRODUCTS.length;
+            return PRODUCTS.filter(p => p.category === catName).length;
+        }
+
         function renderCategories() {
             const nav = document.getElementById('category-nav');
             const visibleCats = showAllCats ? CATEGORIES : CATEGORIES.slice(0, 9);
             nav.innerHTML = visibleCats.map(c => {
                 const active = selectedCategory === c.name;
-                return `<button onclick="selectCategory('${c.name}')" type="button" class="rounded-lg px-2.5 py-2 min-h-11 text-left text-xs sm:text-sm break-words border transition-all shadow-2xs ${active ? 'bg-cyan-600 border-cyan-600 text-white font-semibold' : 'bg-white border-gray-200 text-gray-700 hover:border-cyan-500'}">
-                    ${c.name} <span class="text-[10px] opacity-75 ml-0.5">${c.count}</span>
+                const count = getCategoryCount(c.name);
+                return `<button onclick="selectCategory('${escapeHtml(c.name)}')" type="button" class="rounded-lg px-2.5 py-2 min-h-11 text-left text-xs sm:text-sm break-words border transition-all shadow-2xs ${active ? 'bg-cyan-600 border-cyan-600 text-white font-semibold' : 'bg-white border-gray-200 text-gray-700 hover:border-cyan-500'}">
+                    ${escapeHtml(c.name)} <span class="text-[10px] opacity-75 ml-0.5">${count}</span>
                 </button>`;
             }).join('');
         }
@@ -492,14 +519,14 @@
             if (!p) return;
             openModal(p.name, `
                 <div class="flex flex-col items-center mb-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                    <img src="${p.img}" alt="${p.name}" class="h-44 object-contain">
+                    <img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" class="h-44 object-contain">
                 </div>
                 <div class="space-y-1.5 text-xs bg-gray-50 p-3.5 rounded-xl border border-gray-200">
-                    <p><strong>Código UltraLAB:</strong> <span class="font-mono text-cyan-700">${p.id}</span></p>
-                    <p><strong>Laboratório / Marca:</strong> ${p.brand}</p>
-                    <p><strong>Grupo / Princípio Ativo:</strong> ${p.category}</p>
-                    <p><strong>Concentração:</strong> ${p.concentration}</p>
-                    <p><strong>Apresentação:</strong> ${p.presentation}</p>
+                    <p><strong>Código UltraLAB:</strong> <span class="font-mono text-cyan-700">${escapeHtml(p.id)}</span></p>
+                    <p><strong>Laboratório / Marca:</strong> ${escapeHtml(p.brand)}</p>
+                    <p><strong>Grupo / Princípio Ativo:</strong> ${escapeHtml(p.category)}</p>
+                    <p><strong>Concentração:</strong> ${escapeHtml(p.concentration)}</p>
+                    <p><strong>Apresentação:</strong> ${escapeHtml(p.presentation)}</p>
                     <p><strong>Preço Atual:</strong> <span class="text-base font-bold text-cyan-700">${formatBRL(p.price)}</span></p>
                 </div>
             `);
@@ -641,7 +668,42 @@
             document.getElementById('dock-btn-text').textContent = labels[currentStep];
         }
 
-        function goToStep(step) {
+        function validateBeforeStep(targetStep) {
+            if (targetStep > 1 && getCartTotals().count === 0) {
+                alert('Adicione pelo menos 1 produto ao carrinho primeiro.');
+                return false;
+            }
+            if (targetStep > 3 && currentStep >= 3) {
+                const cleanCep = String(customerData.cep || '').replace(/\D/g, '');
+                if (cleanCep.length !== 8) {
+                    alert('Por favor, informe um CEP válido de 8 dígitos na etapa de Entrega.');
+                    if (currentStep !== 3) goToStep(3, true);
+                    return false;
+                }
+            }
+            if (targetStep > 5) {
+                if (!String(customerData.name || '').trim() || String(customerData.name).trim().length < 3) {
+                    alert('Por favor, informe seu Nome Completo.');
+                    return false;
+                }
+                if (!isValidCPF(customerData.cpf)) {
+                    alert('Por favor, informe um CPF válido.');
+                    return false;
+                }
+                if (String(customerData.phone || '').replace(/\D/g, '').length < 10) {
+                    alert('Por favor, informe seu WhatsApp com DDD.');
+                    return false;
+                }
+                if (!String(customerData.address || '').trim() || !String(customerData.number || '').trim() || !String(customerData.neighborhood || '').trim() || !String(customerData.city || '').trim() || !String(customerData.uf || '').trim()) {
+                    alert('Por favor, preencha todos os campos obrigatórios do endereço de entrega.');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function goToStep(step, skipValidation = false) {
+            if (!skipValidation && step > currentStep && !validateBeforeStep(step)) return;
             if (step > 1 && getCartTotals().count === 0) return;
             currentStep = step;
             const titles = ["", "1 de 6 · Catálogo", "2 de 6 · Carrinho", "3 de 6 · Entrega", "4 de 6 · Pré-Orçamento", "5 de 6 · Dados", "6 de 6 · Revisão Final"];
@@ -656,13 +718,34 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function prevStep() { if (currentStep > 1) goToStep(currentStep - 1); }
+        function prevStep() { if (currentStep > 1) goToStep(currentStep - 1, true); }
         function nextStep() { if (currentStep < 6) goToStep(currentStep + 1); else sendToWhatsApp(); }
 
+        function formatCepMask(val) {
+            const d = String(val || '').replace(/\D/g, '').slice(0, 8);
+            return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
+        }
+
+        function formatCpfMask(val) {
+            const d = String(val || '').replace(/\D/g, '').slice(0, 11);
+            if (d.length > 9) return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9)}`;
+            if (d.length > 6) return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6)}`;
+            if (d.length > 3) return `${d.slice(0,3)}.${d.slice(3)}`;
+            return d;
+        }
+
+        function formatPhoneMask(val) {
+            const d = String(val || '').replace(/\D/g, '').slice(0, 11);
+            if (d.length > 6) return `(${d.slice(0,2)}) ${d.slice(2, d.length - 4)}-${d.slice(d.length - 4)}`;
+            if (d.length > 2) return `(${d.slice(0,2)}) ${d.slice(2)}`;
+            return d;
+        }
+
         async function fetchCep(cepValue) {
-            customerData.cep = cepValue;
+            const masked = formatCepMask(cepValue);
+            customerData.cep = masked;
             saveCustomerData();
-            const clean = cepValue.replace(/\D/g, '');
+            const clean = masked.replace(/\D/g, '');
             if (clean.length === 8) {
                 try {
                     const res = await fetch(`https://viacep.com.br/ws/${clean}/json/`);
@@ -689,7 +772,7 @@
                 box.innerHTML = `
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-lg font-bold text-gray-900">2. Seu Carrinho (${items.length} produtos)</h2>
-                        <button onclick="cart={}; localStorage.setItem('ultralab_cart','{}'); goToStep(1);" class="text-xs text-red-600 hover:underline font-medium">Limpar carrinho</button>
+                        <button onclick="cart={}; localStorage.setItem('ultralab_cart','{}'); goToStep(1, true);" class="text-xs text-red-600 hover:underline font-medium">Limpar carrinho</button>
                     </div>
                     <div class="mb-4 p-3 rounded-xl bg-cyan-50 border border-cyan-200">
                         <p class="text-xs font-semibold text-cyan-900 mb-1.5">${freeShipping ? '🎉 Parabéns! Você desbloqueou Frete Grátis!' : `Faltam ${formatBRL(missingFree)} para ganhar Frete Grátis!`}</p>
@@ -698,16 +781,16 @@
                     <div class="divide-y divide-gray-100 mb-4">
                         ${items.map(i => `
                             <div class="flex items-center justify-between py-3 gap-3">
-                                <img src="${i.img}" class="w-12 h-12 object-contain bg-gray-50 rounded-lg border border-gray-200 p-1 shrink-0">
+                                <img src="${escapeHtml(i.img)}" class="w-12 h-12 object-contain bg-gray-50 rounded-lg border border-gray-200 p-1 shrink-0">
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-[11px] text-cyan-700 font-mono font-semibold">${i.id} • ${i.brand}</p>
-                                    <p class="text-sm font-bold text-gray-900 truncate">${i.name}</p>
+                                    <p class="text-[11px] text-cyan-700 font-mono font-semibold">${escapeHtml(i.id)} • ${escapeHtml(i.brand)}</p>
+                                    <p class="text-sm font-bold text-gray-900 truncate">${escapeHtml(i.name)}</p>
                                     <p class="text-xs text-gray-500">${formatBRL(i.price)} cada</p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <button onclick="addToCart('${i.id}', -1)" class="w-8 h-8 rounded-lg border border-gray-300 bg-gray-50 font-bold text-gray-700">-</button>
-                                    <span class="w-6 text-center font-bold text-sm">${i.qty}</span>
-                                    <button onclick="addToCart('${i.id}', 1)" class="w-8 h-8 rounded-lg bg-cyan-600 text-white font-bold">+</button>
+                                    <button onclick="addToCart('${escapeHtml(i.id)}', -1)" class="w-8 h-8 rounded-lg border border-gray-300 bg-gray-50 font-bold text-gray-700">-</button>
+                                    <span class="w-6 text-center font-bold text-sm">${Number(i.qty)}</span>
+                                    <button onclick="addToCart('${escapeHtml(i.id)}', 1)" class="w-8 h-8 rounded-lg bg-cyan-600 text-white font-bold">+</button>
                                 </div>
                             </div>
                         `).join('')}
@@ -722,23 +805,23 @@
                     <h2 class="text-lg font-bold text-gray-900 mb-4">3. Entrega e Frete</h2>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1">Digite seu CEP (preenchimento automático)</label>
-                            <input type="text" maxlength="9" value="${customerData.cep}" oninput="fetchCep(this.value)" placeholder="00000-000" class="w-full min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
-                            ${customerData.city ? `<p class="text-xs text-emerald-700 font-medium mt-1.5">📍 Localizado: ${customerData.address ? customerData.address + ', ' : ''}${customerData.neighborhood} — ${customerData.city}/${customerData.uf}</p>` : ''}
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Digite seu CEP (preenchimento automático) *</label>
+                            <input type="text" maxlength="9" value="${escapeHtml(customerData.cep)}" oninput="this.value=formatCepMask(this.value); fetchCep(this.value)" placeholder="00000-000" class="w-full min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                            ${customerData.city ? `<p class="text-xs text-emerald-700 font-medium mt-1.5">📍 Localizado: ${customerData.address ? escapeHtml(customerData.address) + ', ' : ''}${escapeHtml(customerData.neighborhood)} — ${escapeHtml(customerData.city)}/${escapeHtml(customerData.uf)}</p>` : ''}
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-2">Escolha a Modalidade de Envio Discreto</label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                 <label class="cursor-pointer border rounded-xl p-3 flex items-center justify-between ${customerData.shippingType === 'SEDEX' ? 'border-cyan-600 bg-cyan-50/60' : 'border-gray-200'}">
                                     <div>
-                                        <p class="text-sm font-bold text-gray-900">SEDEX Expresso c/ Seguro</p>
+                                        <p class="text-sm font-bold text-gray-900">SEDEX Expresso c/ Seguro (${freeShipping ? 'Grátis' : formatBRL(CONFIG.sedexPrice)})</p>
                                         <p class="text-xs text-gray-500">Prazo médio: 2 a 5 dias úteis</p>
                                     </div>
                                     <input type="radio" name="ship" ${customerData.shippingType === 'SEDEX' ? 'checked' : ''} onchange="customerData.shippingType='SEDEX'; saveCustomerData(); renderCheckoutStep();">
                                 </label>
                                 <label class="cursor-pointer border rounded-xl p-3 flex items-center justify-between ${customerData.shippingType === 'PAC' ? 'border-cyan-600 bg-cyan-50/60' : 'border-gray-200'}">
                                     <div>
-                                        <p class="text-sm font-bold text-gray-900">PAC / Transportadora</p>
+                                        <p class="text-sm font-bold text-gray-900">PAC / Transportadora (${freeShipping ? 'Grátis' : formatBRL(CONFIG.pacPrice)})</p>
                                         <p class="text-xs text-gray-500">Prazo médio: 5 a 9 dias úteis</p>
                                     </div>
                                     <input type="radio" name="ship" ${customerData.shippingType === 'PAC' ? 'checked' : ''} onchange="customerData.shippingType='PAC'; saveCustomerData(); renderCheckoutStep();">
@@ -767,7 +850,7 @@
                         <div class="flex justify-between"><span>Subtotal (${items.length} produtos):</span><span class="font-medium">${formatBRL(subtotal)}</span></div>
                         ${savings > 0 ? `<div class="flex justify-between text-emerald-700"><span>Economia em ofertas:</span><span>- ${formatBRL(savings)}</span></div>` : ''}
                         ${pixDiscount > 0 ? `<div class="flex justify-between text-emerald-700 font-medium"><span>Desconto PIX (5%):</span><span>- ${formatBRL(pixDiscount)}</span></div>` : ''}
-                        <div class="flex justify-between"><span>Frete (${customerData.shippingType}):</span><span class="font-medium">${freeShipping ? 'GRÁTIS' : formatBRL(shippingCost)}</span></div>
+                        <div class="flex justify-between"><span>Frete (${escapeHtml(customerData.shippingType)}):</span><span class="font-medium">${freeShipping ? 'GRÁTIS' : formatBRL(shippingCost)}</span></div>
                         <div class="flex justify-between font-bold text-base border-t border-gray-200 pt-2 mt-2 text-cyan-800"><span>Total Estimado:</span><span>${formatBRL(total)}</span></div>
                     </div>
                 `;
@@ -775,15 +858,15 @@
                 box.innerHTML = `
                     <h2 class="text-lg font-bold text-gray-900 mb-4">5. Dados para Envio</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                        <input placeholder="Nome Completo *" value="${customerData.name}" oninput="customerData.name=this.value; saveCustomerData();" class="sm:col-span-2 min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
-                        <input placeholder="CPF (apenas para postagem) *" value="${customerData.cpf}" oninput="customerData.cpf=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
-                        <input placeholder="WhatsApp com DDD *" value="${customerData.phone}" oninput="customerData.phone=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
-                        <input placeholder="Rua / Logradouro *" value="${customerData.address}" oninput="customerData.address=this.value; saveCustomerData();" class="sm:col-span-2 min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
-                        <input placeholder="Número e Complemento *" value="${customerData.number}" oninput="customerData.number=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
-                        <input placeholder="Bairro *" value="${customerData.neighborhood}" oninput="customerData.neighborhood=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
-                        <input placeholder="Cidade *" value="${customerData.city}" oninput="customerData.city=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
-                        <input placeholder="Estado (UF) *" value="${customerData.uf}" oninput="customerData.uf=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
-                        <textarea placeholder="Observações opcionais do pedido..." oninput="customerData.notes=this.value; saveCustomerData();" class="sm:col-span-2 rounded-xl bg-gray-50 border border-gray-300 p-3 h-20">${customerData.notes || ''}</textarea>
+                        <input placeholder="Nome Completo *" value="${escapeHtml(customerData.name)}" oninput="customerData.name=this.value; saveCustomerData();" class="sm:col-span-2 min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="CPF (apenas para postagem) *" maxlength="14" value="${escapeHtml(customerData.cpf)}" oninput="this.value=formatCpfMask(this.value); customerData.cpf=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="WhatsApp com DDD *" maxlength="15" value="${escapeHtml(customerData.phone)}" oninput="this.value=formatPhoneMask(this.value); customerData.phone=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="Rua / Logradouro *" value="${escapeHtml(customerData.address)}" oninput="customerData.address=this.value; saveCustomerData();" class="sm:col-span-2 min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="Número e Complemento *" value="${escapeHtml(customerData.number)}" oninput="customerData.number=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="Bairro *" value="${escapeHtml(customerData.neighborhood)}" oninput="customerData.neighborhood=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="Cidade *" value="${escapeHtml(customerData.city)}" oninput="customerData.city=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3">
+                        <input placeholder="Estado (UF) *" maxlength="2" value="${escapeHtml(customerData.uf)}" oninput="this.value=this.value.toUpperCase(); customerData.uf=this.value; saveCustomerData();" class="min-h-11 rounded-xl bg-gray-50 border border-gray-300 px-3 uppercase">
+                        <textarea placeholder="Observações opcionais do pedido..." oninput="customerData.notes=this.value; saveCustomerData();" class="sm:col-span-2 rounded-xl bg-gray-50 border border-gray-300 p-3 h-20">${escapeHtml(customerData.notes || '')}</textarea>
                     </div>
                 `;
             } else if (currentStep === 6) {
@@ -791,15 +874,15 @@
                     <h2 class="text-lg font-bold text-gray-900 mb-3">6. Revisão Final do Pedido</h2>
                     <div class="text-xs space-y-2 bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 text-gray-700">
                         <p class="font-bold text-cyan-800 text-sm">ITENS DO PEDIDO:</p>
-                        ${items.map(i => `<p>• <strong>${i.qty}x</strong> [${i.id}] ${i.name} — <strong>${formatBRL(i.price * i.qty)}</strong></p>`).join('')}
+                        ${items.map(i => `<p>• <strong>${Number(i.qty)}x</strong> [${escapeHtml(i.id)}] ${escapeHtml(i.name)} — <strong>${formatBRL(i.price * i.qty)}</strong></p>`).join('')}
                         <hr class="border-gray-200 my-2">
                         <p><strong>Subtotal:</strong> ${formatBRL(subtotal)}</p>
-                        <p><strong>Modalidade de Frete (${customerData.shippingType}):</strong> ${freeShipping ? 'GRÁTIS' : formatBRL(shippingCost)}</p>
-                        <p><strong>Forma de Pagamento:</strong> ${customerData.payment} ${pixDiscount > 0 ? `(-${formatBRL(pixDiscount)})` : ''}</p>
+                        <p><strong>Modalidade de Frete (${escapeHtml(customerData.shippingType)}):</strong> ${freeShipping ? 'GRÁTIS' : formatBRL(shippingCost)}</p>
+                        <p><strong>Forma de Pagamento:</strong> ${escapeHtml(customerData.payment)} ${pixDiscount > 0 ? `(-${formatBRL(pixDiscount)})` : ''}</p>
                         <p class="text-base font-bold text-emerald-700 pt-1">TOTAL FINAL: ${formatBRL(total)}</p>
                         <hr class="border-gray-200 my-2">
-                        <p><strong>Destinatário:</strong> ${customerData.name || 'Não informado'} | CPF: ${customerData.cpf || '-'}</p>
-                        <p><strong>Endereço:</strong> ${customerData.address}, ${customerData.number} - ${customerData.neighborhood}, ${customerData.city}/${customerData.uf} - CEP: ${customerData.cep}</p>
+                        <p><strong>Destinatário:</strong> ${escapeHtml(customerData.name || 'Não informado')} | CPF: ${escapeHtml(customerData.cpf || '-')}</p>
+                        <p><strong>Endereço:</strong> ${escapeHtml(customerData.address)}, ${escapeHtml(customerData.number)} - ${escapeHtml(customerData.neighborhood)}, ${escapeHtml(customerData.city)}/${escapeHtml(customerData.uf)} - CEP: ${escapeHtml(customerData.cep)}</p>
                     </div>
                     <button onclick="sendToWhatsApp()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm shadow-md flex items-center justify-center gap-2">
                         Confirmar e Enviar Pedido no WhatsApp
@@ -809,14 +892,43 @@
         }
 
         function sendToWhatsApp() {
-            const { items, subtotal, freeShipping, shippingCost, pixDiscount, total } = getCartTotals();
-            const orderId = "ULT-" + Math.floor(1000 + Math.random() * 9000);
+            if (!validateBeforeStep(6)) return;
 
-            // Salva no Histórico Local ("Meus Pedidos")
+            const { items, subtotal, freeShipping, shippingCost, pixDiscount, total } = getCartTotals();
+            if (items.length === 0) return;
+
+            // Código único unificado (usado tanto no WhatsApp quanto no Supabase e Histórico Local)
+            const orderId = "ULT-" + Math.floor(100000 + Math.random() * 900000);
+            const dateStr = new Date().toLocaleDateString('pt-BR');
+
+            const orderObj = {
+                id: orderId,
+                timestamp: Date.now(),
+                date: dateStr,
+                customerName: customerData.name || 'Cliente',
+                customerPhone: customerData.phone || '',
+                cityUf: `${customerData.city}/${customerData.uf}`,
+                addressFull: `${customerData.address}, ${customerData.number} - ${customerData.neighborhood} — ${customerData.city}/${customerData.uf}`,
+                cep: customerData.cep || '',
+                shippingType: customerData.shippingType,
+                payment: customerData.payment,
+                total,
+                items: items.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })),
+                status: 'Aguardando confirmação no WhatsApp',
+                trackingCode: ''
+            };
+
+            // 1. Salva no Histórico Local ("Meus Pedidos")
             const history = JSON.parse(localStorage.getItem('ultralab_orders') || '[]');
-            history.unshift({ id: orderId, date: new Date().toLocaleDateString('pt-BR'), total, items, status: 'Aguardando confirmação no WhatsApp' });
+            history.unshift(orderObj);
             localStorage.setItem('ultralab_orders', JSON.stringify(history));
 
+            // 2. Salva no Supabase em paralelo (sem bloquear o window.open no iOS/Safari)
+            if (typeof window._saveOrderToSupabase === 'function') {
+                window._saveOrderToSupabase(orderObj);
+            }
+
+            // 3. Monta a mensagem e abre o WhatsApp imediatamente no clique
             let msg = `*NOVO PEDIDO #${orderId} - UltraLAB*\n\n`;
             msg += `*ITENS DO PEDIDO:*\n`;
             items.forEach(i => {
@@ -825,18 +937,48 @@
             msg += `\n*Subtotal:* ${formatBRL(subtotal)}`;
             if (pixDiscount > 0) msg += `\n*Desconto PIX (5%):* -${formatBRL(pixDiscount)}`;
             msg += `\n*Frete (${customerData.shippingType}):* ${freeShipping ? 'GRÁTIS' : formatBRL(shippingCost)}`;
+            msg += `\n*Forma de Pagamento:* ${customerData.payment}`;
             msg += `\n*VALOR TOTAL:* ${formatBRL(total)}\n\n`;
             msg += `*DADOS DE ENTREGA:*\n`;
             msg += `Nome: ${customerData.name}\nCPF: ${customerData.cpf}\nWhatsApp: ${customerData.phone}\n`;
             msg += `Endereço: ${customerData.address}, ${customerData.number} - ${customerData.neighborhood}\nCidade: ${customerData.city}/${customerData.uf} | CEP: ${customerData.cep}\n`;
             if (customerData.notes) msg += `Obs: ${customerData.notes}`;
 
-            window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
+            const waUrl = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, '_blank');
+
+            // 4. Limpa o carrinho e mostra modal de confirmação com o código de rastreio
+            cart = {};
+            localStorage.setItem('ultralab_cart', '{}');
+            goToStep(1, true);
+            openModal('Pedido Registrado com Sucesso!', `
+                <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-center space-y-2">
+                    <p class="text-xs uppercase font-bold tracking-wider text-emerald-700">Código do seu Pedido</p>
+                    <p class="text-2xl font-mono font-bold text-cyan-800">#${escapeHtml(orderId)}</p>
+                    <p class="text-xs text-gray-600">Guarde este código para consultar o status e o rastreio no botão <strong>"Rastrear Pedido"</strong> no rodapé do site.</p>
+                    <a href="${waUrl}" target="_blank" class="inline-block mt-2 w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs">
+                        Caso o WhatsApp não tenha aberto, clique aqui →
+                    </a>
+                </div>
+            `);
         }
 
         // ============================================================================
-        // MODAIS DO RODAPÉ, BUSCA POR VOZ E PAINEL ADMIN (/admin)
+        // MODAIS DO RODAPÉ, BUSCA POR VOZ E ATALHO SECRETO DO PAINEL ADMIN
         // ============================================================================
+        let _secretTapCount = 0;
+        let _secretTapTimer = null;
+        function handleSecretAdminTap() {
+            _secretTapCount++;
+            clearTimeout(_secretTapTimer);
+            if (_secretTapCount >= 5) {
+                _secretTapCount = 0;
+                window.location.href = 'admin.html';
+            } else {
+                _secretTapTimer = setTimeout(() => { _secretTapCount = 0; }, 2000);
+            }
+        }
+
         function openModal(title, htmlContent) {
             document.getElementById('modal-title').textContent = title;
             document.getElementById('modal-body').innerHTML = htmlContent;
@@ -857,7 +999,7 @@
                 <ul class="list-disc pl-5 space-y-1">
                     <li>Navegue pelos princípios ativos ou filtre pela sua marca preferida.</li>
                     <li>Adicione os itens ao carrinho e acompanhe as 6 etapas rápidas.</li>
-                    <li>Compras acima de <strong>R$ 1.800,00</strong> possuem <strong>Frete Grátis</strong> automático.</li>
+                    <li>Compras acima de <strong>${formatBRL(CONFIG.freeShippingThreshold)}</strong> possuem <strong>Frete Grátis</strong> automático.</li>
                     <li>No final, seu pedido gera um código único e abre direto no nosso WhatsApp oficial para pagamento e envio imediato.</li>
                 </ul>
             `);
@@ -878,9 +1020,9 @@
 
         function openTrackModal() {
             openModal('Rastrear Pedido', `
-                <p>Digite o número do seu pedido (ex: <code>ULT-1234</code>) ou código de rastreio:</p>
+                <p>Digite o número do seu pedido (ex: <code>ULT-123456</code>):</p>
                 <div class="flex gap-2 mt-2">
-                    <input id="track-input" placeholder="Código do pedido ou Correios" class="flex-1 min-h-11 rounded-xl border border-gray-300 px-3 text-sm">
+                    <input id="track-input" placeholder="Ex: ULT-123456" class="flex-1 min-h-11 rounded-xl border border-gray-300 px-3 text-sm font-mono uppercase">
                     <button onclick="checkTracking()" class="px-4 bg-cyan-600 text-white rounded-xl font-semibold text-xs">Consultar</button>
                 </div>
                 <div id="track-result" class="mt-3 text-xs"></div>
@@ -888,14 +1030,14 @@
         }
 
         function checkTracking() {
-            const code = document.getElementById('track-input').value.trim().toUpperCase();
+            const code = document.getElementById('track-input').value.trim().toUpperCase().replace('#', '');
             const orders = JSON.parse(localStorage.getItem('ultralab_orders') || '[]');
-            const found = orders.find(o => o.id === code || `#${o.id}` === code);
+            const found = orders.find(o => o.id === code);
             const res = document.getElementById('track-result');
             if (found) {
-                res.innerHTML = `<div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900"><strong>Pedido #${found.id}</strong> (${found.date})<br>Status: ${found.status}<br>Valor: ${formatBRL(found.total)}</div>`;
+                res.innerHTML = `<div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900"><strong>Pedido #${escapeHtml(found.id)}</strong> (${escapeHtml(found.date)})<br>Status: ${escapeHtml(found.status)}<br>Valor: ${formatBRL(found.total)}</div>`;
             } else {
-                res.innerHTML = `<div class="p-3 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-900">Para consultar o código de postagem atualizado do objeto <strong>${code || 'informado'}</strong>, clique abaixo para falar com nossa expedição:<br><a href="https://wa.me/${CONFIG.whatsapp}?text=Ol%C3%A1!%20Quero%20rastrear%20meu%20pedido%20${encodeURIComponent(code)}" target="_blank" class="inline-block mt-2 font-bold underline">Consultar expedição no WhatsApp →</a></div>`;
+                res.innerHTML = `<div class="p-3 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-900">Para consultar o código de postagem atualizado do objeto <strong>${escapeHtml(code || 'informado')}</strong>, clique abaixo para falar com nossa expedição:<br><a href="https://wa.me/${CONFIG.whatsapp}?text=Ol%C3%A1!%20Quero%20rastrear%20meu%20pedido%20${encodeURIComponent(code)}" target="_blank" class="inline-block mt-2 font-bold underline">Consultar expedição no WhatsApp →</a></div>`;
             }
         }
 
@@ -905,23 +1047,26 @@
                 openModal('Meus Pedidos', '<p>Você ainda não realizou nenhum pedido neste dispositivo.</p>');
                 return;
             }
-            openModal('Meus Pedidos Recentes', orders.map(o => `
+            openModal('Meus Pedidos Recentes', orders.map((o, idx) => `
                 <div class="p-3 rounded-xl border border-gray-200 bg-gray-50 flex justify-between items-center">
                     <div>
-                        <p class="font-bold text-gray-900">#${o.id} — ${formatBRL(o.total)}</p>
-                        <p class="text-xs text-gray-500">Data: ${o.date} • ${o.items.length} itens</p>
+                        <p class="font-bold text-gray-900">#${escapeHtml(o.id)} — ${formatBRL(o.total)}</p>
+                        <p class="text-xs text-gray-500">Data: ${escapeHtml(o.date)} • ${(o.items || []).length} itens • ${escapeHtml(o.status || '')}</p>
                     </div>
-                    <button onclick='reorder(${JSON.stringify(o.items)})' class="px-3 py-1.5 bg-cyan-600 text-white rounded-lg text-xs font-semibold">Refazer pedido</button>
+                    <button onclick="reorderByIndex(${idx})" class="px-3 py-1.5 bg-cyan-600 text-white rounded-lg text-xs font-semibold">Refazer pedido</button>
                 </div>
             `).join(''));
         }
 
-        function reorder(items) {
+        function reorderByIndex(idx) {
+            const orders = JSON.parse(localStorage.getItem('ultralab_orders') || '[]');
+            const target = orders[idx];
+            if (!target || !target.items) return;
             cart = {};
-            items.forEach(i => { cart[i.id] = i.qty; });
+            target.items.forEach(i => { cart[i.id] = i.qty; });
             localStorage.setItem('ultralab_cart', JSON.stringify(cart));
             closeModal();
-            goToStep(2);
+            goToStep(2, true);
         }
 
         function openAboutModal() {
@@ -957,29 +1102,6 @@
                     <div><p class="font-bold text-gray-900">4. Tem seguro de entrega?</p><p class="text-xs">Sim! Na modalidade com seguro, garantimos 100% de reenvio sem custo caso ocorra qualquer extravio no transporte.</p></div>
                 </div>
             `);
-        }
-
-       function openAdminModal() {
-    window.location.href = 'admin.html';
-}
-
-        function adminAddProduct() {
-            const p = {
-                id: document.getElementById('adm-id').value || ('ULT' + Math.floor(Math.random()*900)),
-                brand: document.getElementById('adm-brand').value || 'ULTRA',
-                name: document.getElementById('adm-name').value || 'Novo Produto UltraLAB',
-                category: document.getElementById('adm-cat').value || 'Testosterona',
-                concentration: '250 mg/ml',
-                presentation: 'FRASCO | 10ML',
-                price: parseFloat(document.getElementById('adm-price').value) || 190,
-                oldPrice: null, discount: null, isNew: true, available: true,
-                img: "https://silverlab.vip/manus-storage/peptide_placeholder_treated_0ef647ca.png"
-            };
-            PRODUCTS.unshift(p);
-            localStorage.setItem('ultralab_products', JSON.stringify(PRODUCTS));
-            renderProducts();
-            closeModal();
-            alert('Produto adicionado ao catálogo!');
         }
 
         function startVoiceSearch() {
@@ -1019,7 +1141,7 @@
         renderProducts();
         updateDock();
     </script>
-<!-- SINCRONIZAÇÃO EM TEMPO REAL COM O SUPABASE -->
+    <!-- SINCRONIZAÇÃO EM TEMPO REAL COM O SUPABASE -->
     <script type="module">
         import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -1041,55 +1163,63 @@
             // 2. Puxa os Produtos atualizados do Supabase sem travar
             supabase.from('products').select('*').then(({ data }) => {
                 if (data && data.length > 0) {
-                    PRODUCTS = data.map(row => row.data);
+                    PRODUCTS = data.map(row => row.data).filter(Boolean);
+                    localStorage.setItem('ultralab_products_v2', JSON.stringify(PRODUCTS));
                     localStorage.setItem('ultralab_products', JSON.stringify(PRODUCTS));
                     renderCategories();
                     renderProducts();
-                    console.log("⚡ Produtos locais do Supabase carregados com sucesso no Index!");
+                    updateDock();
                 }
             });
 
-            // 3. Salva o Pedido no Supabase quando o cliente envia pro WhatsApp
-            const originalSend = window.sendToWhatsApp;
-            window.sendToWhatsApp = async function() {
-                const { items, total } = getCartTotals();
-                const orderId = "ULT-" + Math.floor(1000 + Math.random() * 9000);
-                window._pendingOrderId = orderId;
-                const orderObj = {
-                    id: orderId,
-                    timestamp: Date.now(),
-                    date: new Date().toLocaleDateString('pt-BR'),
-                    customerName: customerData.name || 'Cliente',
-                    customerPhone: customerData.phone || '',
-                    cityUf: `${customerData.city}/${customerData.uf}`,
-                    cep: customerData.cep || '',
-                    shippingType: customerData.shippingType,
-                    total,
-                    items: items.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })),
-                    status: 'Aguardando confirmação no WhatsApp',
-                    trackingCode: ''
-                };
-                await supabase.from('orders').upsert({ id: orderId, timestamp: orderObj.timestamp, data: orderObj });
-                originalSend();
+            // 3. Salva o Pedido no Supabase com o MESMO orderId enviado no WhatsApp
+            window._saveOrderToSupabase = async function(orderObj) {
+                try {
+                    await supabase.from('orders').upsert({
+                        id: orderObj.id,
+                        timestamp: orderObj.timestamp,
+                        data: orderObj
+                    });
+                } catch (e) {
+                    console.warn("Falha ao sincronizar pedido na nuvem:", e);
+                }
             };
 
-            // 4. Rastreio Real consultando o Supabase
+            // 4. Rastreio Real consultando o Supabase (ou RPC seguro get_order_tracking)
             window.checkTracking = async function() {
                 const code = document.getElementById('track-input').value.trim().toUpperCase().replace('#', '');
                 const res = document.getElementById('track-result');
+                if (!code) {
+                    res.innerHTML = `<div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800">Digite o código do pedido (ex: ULT-123456).</div>`;
+                    return;
+                }
                 res.innerHTML = 'Consultando base de envios...';
-                const { data } = await supabase.from('orders').select('*').eq('id', code).single();
-                if (data && data.data) {
-                    const o = data.data;
+
+                let orderData = null;
+                // Tenta via função RPC segura primeiro, e faz fallback para select por ID
+                const rpcRes = await supabase.rpc('get_order_tracking', { order_code: code });
+                if (!rpcRes.error && rpcRes.data) {
+                    orderData = rpcRes.data;
+                } else {
+                    const { data } = await supabase.from('orders').select('*').eq('id', code).single();
+                    if (data && data.data) orderData = data.data;
+                }
+
+                if (!orderData) {
+                    const localOrders = JSON.parse(localStorage.getItem('ultralab_orders') || '[]');
+                    orderData = localOrders.find(o => o.id === code) || null;
+                }
+
+                if (orderData) {
                     res.innerHTML = `
                         <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1">
-                            <p class="font-bold text-sm">Pedido #${o.id} (${o.date})</p>
-                            <p><strong>Status Atual:</strong> ${o.status}</p>
-                            <p><strong>Destino:</strong> ${o.cityUf}</p>
-                            ${o.trackingCode ? `<p class="pt-1 font-mono font-bold text-cyan-800">📮 Código Rastreio: ${o.trackingCode}</p>` : '<p class="text-gray-500">Código de postagem será inserido assim que despachado.</p>'}
+                            <p class="font-bold text-sm">Pedido #${escapeHtml(orderData.id)} (${escapeHtml(orderData.date || '')})</p>
+                            <p><strong>Status Atual:</strong> ${escapeHtml(orderData.status)}</p>
+                            <p><strong>Destino:</strong> ${escapeHtml(orderData.cityUf || '-')}</p>
+                            ${orderData.trackingCode ? `<p class="pt-1 font-mono font-bold text-cyan-800">📮 Código Rastreio: ${escapeHtml(orderData.trackingCode)}</p>` : '<p class="text-gray-500">Código de postagem será inserido assim que despachado.</p>'}
                         </div>`;
                 } else {
-                    res.innerHTML = `<div class="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800">Pedido <strong>#${code}</strong> não localizado. Verifique o código enviado no seu WhatsApp.</div>`;
+                    res.innerHTML = `<div class="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800">Pedido <strong>#${escapeHtml(code)}</strong> não localizado. Verifique o código enviado no seu WhatsApp.</div>`;
                 }
             };
         }
