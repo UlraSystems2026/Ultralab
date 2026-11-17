@@ -26,8 +26,8 @@
             </div>
 
             <div>
-                <label for="admin-email" class="block text-xs font-semibold text-gray-700 mb-1">E-mail Admin (opcional p/ Supabase Auth)</label>
-                <input id="admin-email" type="email" autocomplete="username" placeholder="admin@proton.me (ou deixe em branco)" class="w-full h-11 rounded-xl border border-gray-300 bg-gray-50 px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                <label for="admin-email" class="block text-xs font-semibold text-gray-700 mb-1">E-mail Admin *</label>
+                <input id="admin-email" type="email" required autocomplete="username" placeholder="admin.ultralab@proton.me" class="w-full h-11 rounded-xl border border-gray-300 bg-gray-50 px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-500">
             </div>
 
             <div>
@@ -169,16 +169,6 @@
                 .replace(/'/g, '&#39;');
         }
 
-        async function sha256Hex(text) {
-            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        // Hash SHA-256 para não deixar a senha em texto puro no código-fonte
-        const ALLOWED_PASS_HASHES = [
-            "806bfd90612efbfc47cc15bb05d0de141441c8f0a54bc517abb8690af17346bc"
-        ];
-
         let products = JSON.parse(localStorage.getItem('ultralab_products_v2') || localStorage.getItem('ultralab_products') || '[]');
         let orders = JSON.parse(localStorage.getItem('ultralab_orders') || '[]');
         let config = JSON.parse(localStorage.getItem('ultralab_config')) || {
@@ -193,31 +183,22 @@
             const pass = document.getElementById('admin-pass').value;
             const btn = document.getElementById('login-btn');
 
-            if (!pass) return;
+            if (!email || !pass) {
+                alert('Informe o e-mail e a senha cadastrados no Supabase Auth.');
+                return;
+            }
             btn.disabled = true;
-            btn.textContent = "Verificando...";
+            btn.textContent = "Autenticando...";
 
             try {
-                // 1. Se preencheu e-mail e Supabase está ativo, autentica via Supabase Auth (compatível com RLS restrito)
-                if (email && isCloudActive) {
-                    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
-                    if (error) {
-                        alert('Falha no login Supabase Auth: ' + error.message);
-                        return;
-                    }
-                    if (data && data.user) {
-                        unlockDashboard();
-                        return;
-                    }
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+                if (error || !data || !data.user) {
+                    alert('E-mail ou senha inválidos!');
+                    return;
                 }
-
-                // 2. Validação via Hash SHA-256 da senha mestra
-                const passHash = await sha256Hex(pass);
-                if (ALLOWED_PASS_HASHES.includes(passHash)) {
-                    unlockDashboard();
-                } else {
-                    alert('Senha incorreta!');
-                }
+                unlockDashboard();
+            } catch (err) {
+                alert('Erro ao conectar ao Supabase Auth.');
             } finally {
                 btn.disabled = false;
                 btn.textContent = "Entrar no Painel";
@@ -228,6 +209,14 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('admin-dashboard').classList.remove('hidden');
             initAdmin();
+        }
+
+        if (isCloudActive) {
+            supabase.auth.getSession().then(({ data }) => {
+                if (data && data.session) {
+                    unlockDashboard();
+                }
+            });
         }
 
         window.logoutAdmin = async () => {
